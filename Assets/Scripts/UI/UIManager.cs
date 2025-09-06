@@ -4,17 +4,18 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum PanelType
+{
+    Pause,
+    Settings,
+    Results,
+}
+
 public class UIManager : Singleton<UIManager>
 {
-    public enum PanelName
-    {
-        Pause,
-        Settings,
-    }
-
     [Header("Panels")]
-    [SerializeField, SerializedDictionary("Panel Name", "Panel")]
-    private SerializedDictionary<PanelName, UIPanel> panels = new SerializedDictionary<PanelName, UIPanel>();
+    [SerializeField, SerializedDictionary("Panel Type", "Panel")]
+    private SerializedDictionary<PanelType, UIPanel> panels = new SerializedDictionary<PanelType, UIPanel>();
     [field: SerializeField, ReadOnly] public UIPanel CurrentPanel { get; private set; }
 
     /// <summary>
@@ -34,8 +35,7 @@ public class UIManager : Singleton<UIManager>
     /// <summary>
     /// Shows the specified panel, hiding the current one if it exists.
     /// </summary>
-    /// <param name="panelName"></param>
-    public void ShowPanel(PanelName panelName)
+    public void ShowPanel(PanelType panelName)
     {
         UIPanel panel = panels[panelName];
 

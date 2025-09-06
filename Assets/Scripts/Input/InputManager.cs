@@ -86,8 +86,16 @@ public class InputManager : Singleton<InputManager>, IPlayerActions, IUIActions
     }
     public void OnPause(InputAction.CallbackContext context)
     {
+        if (!GameManager.IsLoaded)
+            return;
 
+        // dont pause if not in playing state
+        if (GameManager.Instance.CurrentState != GameState.Playing)
+            return;
+
+        GameManager.Instance.ChangeState(GameState.Paused);
     }
+
     public void LockCursor(bool locked)
     {
         Cursor.lockState = locked ? CursorLockMode.Locked : CursorLockMode.None; ;
@@ -97,7 +105,14 @@ public class InputManager : Singleton<InputManager>, IPlayerActions, IUIActions
     // UI Actions (no need to touch)
     public void OnUnPause(InputAction.CallbackContext context)
     {
+        if (!GameManager.IsLoaded)
+            return;
 
+        // dont unpause if not in paused state
+        if (GameManager.Instance.CurrentState != GameState.Paused)
+            return;
+
+        GameManager.Instance.ChangeState(GameState.Playing);
     }
     public void OnPoint(InputAction.CallbackContext context)
     {
