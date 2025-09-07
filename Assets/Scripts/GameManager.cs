@@ -15,6 +15,10 @@ public class GameManager : Singleton<GameManager>
 {
     public static bool IsLoaded => Instance != null;
 
+    [SerializeField]
+    [Tooltip("Current state of the game (read-only).")]
+    private GameState inspectorCurrentState;
+
     public GameState CurrentState { get; private set; }
     public event Action<GameState> OnGameStateChanged = delegate { };
 
@@ -29,6 +33,7 @@ public class GameManager : Singleton<GameManager>
             return;
 
         CurrentState = newState;
+        inspectorCurrentState = newState; // Update inspector field
         EnterState(newState);
 
         OnGameStateChanged?.Invoke(newState);
