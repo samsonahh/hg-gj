@@ -3,13 +3,24 @@ using PlayerStates;
 
 public class PlayerController : MonoBehaviour
 {
+    public InputManager Input { get; private set; } // for easier access
+
+    [field: Header("References")]
+    [field: SerializeField] public Rigidbody RigidBody;
+    [field: SerializeField] public CapsuleCollider CapsuleCollider;
+
     private StateMachine<PlayerController> stateMachine;
     [field: Header("States")]
-    [field: SerializeField] public GroundedState GroundedState { get; private set; } = new();
+    [field: SerializeField] public GroundedSuperState GroundedSuperState { get; private set; } = new();
+    [field: SerializeField] public AirborneSuperState AirborneSuperState { get; private set; } = new();
     [field: SerializeField] public WallRunState WallRunState { get; private set; } = new();
+
+    public bool IsGrounded => GroundedSuperState.IsGrounded; // for easier access
 
     private void Awake()
     {
+        Input = InputManager.Instance;
+
         InitializeStateMachine();
     }
 
@@ -17,10 +28,11 @@ public class PlayerController : MonoBehaviour
     {
         stateMachine = new StateMachine<PlayerController>(this);
 
-        GroundedState.Init(stateMachine, this);
+        GroundedSuperState.Init(stateMachine, this);
+        AirborneSuperState.Init(stateMachine, this);
         WallRunState.Init(stateMachine, this);
 
-        stateMachine.ChangeState(GroundedState, true);
+        stateMachine.ChangeState(GroundedSuperState, true);
     }
 
     private void OnDestroy()
@@ -28,8 +40,19 @@ public class PlayerController : MonoBehaviour
         stateMachine.Destroy();
     }
 
+    private void OnDrawGizmos()
+    {
+        if(GroundedSuperState != null)
+        {
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireSphere(transform.position + GroundedSuperState.GroundCheckDistance * Vector3.down, GroundedSuperState.GroundCheckRadius);
+        }
+    }
+
     private void Update()
     {
+        GroundedSuperState.CheckGrounded();
+
         stateMachine.Update();
     }
 

@@ -1,3 +1,5 @@
+using UnityEngine;
+
 namespace PlayerStates
 {
     [System.Serializable]
@@ -21,6 +23,14 @@ namespace PlayerStates
         private protected override void OnFixedUpdate()
         {
 
+        }
+
+        private protected override State<PlayerController> GetTransition()
+        {
+            if (context.Input.MoveDirection != Vector2.zero)
+                return context.GroundedSuperState.WalkState;
+
+            return null;
         }
     }
 }

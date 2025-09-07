@@ -1,4 +1,3 @@
-using DG.Tweening.Core.Easing;
 using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -10,7 +9,10 @@ public class InputManager : Singleton<InputManager>, IPlayerActions, IUIActions
 
     public Vector2 MoveDirection => InputActions.Player.Move.ReadValue<Vector2>();
     public Vector2 LookDirection => InputActions.Player.Look.ReadValue<Vector2>();
-    public event Action Attack = delegate { };
+    public event Action Jump = delegate { };
+    public event Action<bool> Sprint = delegate { };
+    public event Action<bool> Crouch = delegate { };
+    public event Action Shoot = delegate { };
 
     private protected override void Awake()
     {
@@ -79,10 +81,29 @@ public class InputManager : Singleton<InputManager>, IPlayerActions, IUIActions
     {
 
     }
-    public void OnAttack(InputAction.CallbackContext context)
+    public void OnJump(InputAction.CallbackContext context)
     {
         if (context.performed)
-            Attack?.Invoke();
+            Jump?.Invoke();
+    }
+    public void OnSprint(InputAction.CallbackContext context)
+    {
+        if (context.started)
+            Sprint?.Invoke(true);
+        else if (context.canceled)
+            Sprint?.Invoke(false);
+    }
+    public void OnCrouch(InputAction.CallbackContext context)
+    {
+        if (context.started)
+            Crouch?.Invoke(true);
+        else if (context.canceled)
+            Crouch?.Invoke(false);
+    }
+    public void OnShoot(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+            Shoot?.Invoke();
     }
     public void OnPause(InputAction.CallbackContext context)
     {

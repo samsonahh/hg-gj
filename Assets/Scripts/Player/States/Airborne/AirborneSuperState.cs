@@ -1,7 +1,7 @@
 namespace PlayerStates
 {
     [System.Serializable]
-    public class AirborneState : SuperState<PlayerController>
+    public class AirborneSuperState : SuperState<PlayerController>
     {
         public override State<PlayerController> InitialSubState => null;
 
@@ -30,6 +30,14 @@ namespace PlayerStates
         private protected override void OnFixedUpdate()
         {
 
+        }
+
+        private protected override State<PlayerController> GetTransition()
+        {
+            if (context.IsGrounded)
+                return context.GroundedSuperState;
+
+            return null;
         }
     }
 }
