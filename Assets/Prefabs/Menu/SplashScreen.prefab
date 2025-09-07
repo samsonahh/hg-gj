@@ -55,12 +55,12 @@ MonoBehaviour:
   backgroundImage: {fileID: 5652597359788351015}
   splashImage: {fileID: 291820476888977834}
   skipSplash: 0
-  fadeInDuration: 1
+  fadeInDuration: 0.25
   fadeInEaseType: 1
-  showLogoDuration: 1
-  fadeOutDuration: 1
+  showLogoDuration: 0.5
+  fadeOutDuration: 0.25
   fadeOutEaseType: 1
-  backgroundFadeDuration: 0.5
+  backgroundFadeDuration: 0.25
   backgroundFadeEaseType: 1
 --- !u!223 &3845511607406146638
 Canvas:
