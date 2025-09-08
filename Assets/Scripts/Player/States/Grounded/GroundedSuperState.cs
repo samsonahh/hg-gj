@@ -1,4 +1,5 @@
 using NaughtyAttributes;
+using System;
 using UnityEngine;
 
 namespace PlayerStates
@@ -67,7 +68,8 @@ namespace PlayerStates
         {
             if (!IsGrounded)
             {
-                context.AirborneSuperState.ActivateCoyoteTime(coyoteTime);
+                if (!hasJumped)
+                    context.AirborneSuperState.ActivateCoyoteTime(coyoteTime, Input_Jump);
                 return context.AirborneSuperState;
             }
 
@@ -79,12 +81,9 @@ namespace PlayerStates
             IsGrounded = Physics.CheckSphere(context.transform.position + GroundCheckDistance * Vector3.down, GroundCheckRadius, groundLayerMask);
         }
 
-        public void Input_Jump()
+        private void Input_Jump()
         {
             if (jumpHeight <= 0f)
-                return;
-
-            if (!IsGrounded)
                 return;
 
             if (hasJumped)

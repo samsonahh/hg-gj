@@ -1,3 +1,5 @@
+using System;
+using System.Collections;
 using UnityEngine;
 
 namespace PlayerStates
@@ -11,7 +13,7 @@ namespace PlayerStates
         [SerializeField] private float regroundTimeThreshold = 0.1f;
         public float Timer { get; private set; }
 
-        private float coyoteTimer;
+        (float timer, Action jumpFunction)? coyoteTimeData;
 
         private protected override void InitializeSubStates()
         {
@@ -25,9 +27,10 @@ namespace PlayerStates
 
         private protected override void OnExit()
         {
-            if (context.Input != null)
+            if(coyoteTimeData != null)
             {
-                context.Input.Jump -= context.GroundedSuperState.Input_Jump;
+                if(context.Input != null)
+                    context.Input.Jump -= coyoteTimeData.Value.jumpFunction;
             }
         }
 
@@ -35,8 +38,17 @@ namespace PlayerStates
         {
             Timer += Time.deltaTime;
             
-            HandleCoyoteTimer();
-            
+            if(coyoteTimeData != null)
+            {
+                coyoteTimeData = (coyoteTimeData.Value.timer - Time.deltaTime, coyoteTimeData.Value.jumpFunction);
+                if(coyoteTimeData.Value.timer <= 0f)
+                {
+                    if (context.Input != null)
+                        context.Input.Jump -= coyoteTimeData.Value.jumpFunction;
+                    coyoteTimeData = null;
+                }
+            }
+
             context.ApplyPlanarVelocity();
             context.ApplyGravity();
         }
@@ -54,22 +66,10 @@ namespace PlayerStates
             return null;
         }
 
-        public void ActivateCoyoteTime(float duration)
+        public void ActivateCoyoteTime(float duration, Action jumpCallback)
         {
-            coyoteTimer = duration;
-            context.Input.Jump += context.GroundedSuperState.Input_Jump;
-        }
-
-        private void HandleCoyoteTimer()
-        {
-            if (coyoteTimer > 0)
-                coyoteTimer -= Time.deltaTime;
-            else
-            {
-                coyoteTimer = 0f;
-                if(context.Input != null)
-                    context.Input.Jump -= context.GroundedSuperState.Input_Jump;
-            }
+            coyoteTimeData = (duration, jumpCallback);
+            context.Input.Jump += jumpCallback;
         }
     }
 }
