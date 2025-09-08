@@ -22,10 +22,10 @@ namespace PlayerStates
 
         private protected override void InitializeSubStates()
         {
-            IdleState.Init(subStateMachine, context);
-            WalkState.Init(subStateMachine, context);
-            SprintState.Init(subStateMachine, context);
-            SlideState.Init(subStateMachine, context);
+            IdleState.Init(SubStateMachine, context);
+            WalkState.Init(SubStateMachine, context);
+            SprintState.Init(SubStateMachine, context);
+            SlideState.Init(SubStateMachine, context);
         }
 
         private protected override void OnEnter()
@@ -73,7 +73,6 @@ namespace PlayerStates
                 return;
 
             float jumpForce = Mathf.Sqrt(2 * jumpHeight * Mathf.Abs(Physics.gravity.y)); // Equation to calculate jump force based on desired height
-            context.RigidBody.AddForce(Vector3.up * jumpForce, ForceMode.VelocityChange);
 
             stateMachine.ChangeState(context.AirborneSuperState);
         }

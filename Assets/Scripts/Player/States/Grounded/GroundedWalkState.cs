@@ -19,14 +19,14 @@ namespace PlayerStates
 
         private protected override void OnUpdate()
         {
+            Vector3 moveDirection = Utils.GetCameraBasedMoveInput(CameraManager.Instance.CurrentCamera.transform, context.Input.MoveDirection);
 
+            context.Controller.Move(speed * Time.deltaTime * moveDirection);
         }
 
         private protected override void OnFixedUpdate()
         {
-            Vector3 moveDirection = Utils.GetCameraBasedMoveInput(CameraManager.Instance.CurrentCamera.transform, context.Input.MoveDirection);
 
-            context.RigidBody.MovePosition(context.transform.position + speed * Time.fixedDeltaTime * moveDirection);
         }
 
         private protected override State<PlayerController> GetTransition()

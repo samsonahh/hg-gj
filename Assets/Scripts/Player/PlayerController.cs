@@ -6,8 +6,7 @@ public class PlayerController : MonoBehaviour
     public InputManager Input { get; private set; } // for easier access
 
     [field: Header("References")]
-    [field: SerializeField] public Rigidbody RigidBody;
-    [field: SerializeField] public CapsuleCollider CapsuleCollider;
+    [field: SerializeField] public CharacterController Controller;
 
     private StateMachine<PlayerController> stateMachine;
     [field: Header("States")]
@@ -16,6 +15,7 @@ public class PlayerController : MonoBehaviour
     [field: SerializeField] public WallRunState WallRunState { get; private set; } = new();
 
     public bool IsGrounded => GroundedSuperState.IsGrounded; // for easier access
+    public Vector3 Velocity { get; private set; }
 
     private void Awake()
     {
@@ -60,4 +60,6 @@ public class PlayerController : MonoBehaviour
     {
         stateMachine.FixedUpdate();
     }
+    
+    public void SetVelocity(Vector3 newVelocity) => Velocity = newVelocity;
 }

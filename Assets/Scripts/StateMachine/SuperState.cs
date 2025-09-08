@@ -3,12 +3,12 @@
 [System.Serializable]
 public abstract class SuperState<TContext> : State<TContext> where TContext : MonoBehaviour
 {
-    private protected StateMachine<TContext> subStateMachine;
+    public StateMachine<TContext> SubStateMachine { get; private set; }
     public abstract State<TContext> InitialSubState { get; }
 
     private protected override void OnInit()
     {
-        subStateMachine = new StateMachine<TContext>(context);
+        SubStateMachine = new StateMachine<TContext>(context);
         InitializeSubStates();
     }
 
@@ -16,19 +16,19 @@ public abstract class SuperState<TContext> : State<TContext> where TContext : Mo
 
     public override void Destroy()
     {
-        subStateMachine.Destroy();
+        SubStateMachine.Destroy();
         base.Destroy();
     }
 
     public override void Enter()
     {
         base.Enter();
-        subStateMachine.ChangeState(InitialSubState, true);
+        SubStateMachine.ChangeState(InitialSubState, true);
     }
 
     public override void Exit()
     {
-        subStateMachine.ExitCurrentState();
+        SubStateMachine.ExitCurrentState();
         base.Exit();
     }
 
@@ -37,18 +37,18 @@ public abstract class SuperState<TContext> : State<TContext> where TContext : Mo
         base.Update();
 
         State<TContext> transitionState = GetSubStateTransition();
-        if (transitionState != null && !subStateMachine.HasTransitionedThisFrame)
+        if (transitionState != null && !SubStateMachine.HasTransitionedThisFrame)
         {
-            subStateMachine.ChangeState(transitionState);
+            SubStateMachine.ChangeState(transitionState);
             return;
         }
-        subStateMachine.Update();
+        SubStateMachine.Update();
     }
 
     public override void FixedUpdate()
     {
         base.FixedUpdate();
-        subStateMachine.FixedUpdate();
+        SubStateMachine.FixedUpdate();
     }
 
     /// <summary>
