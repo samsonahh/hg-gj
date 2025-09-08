@@ -1,16 +1,14 @@
-using UnityEngine;
 using DG.Tweening;
+using UnityEngine;
 
 namespace PlayerStates
 {
     [System.Serializable]
-    public class GroundedSlideState : State<PlayerController>
+    public class GroundedCrouchState : State<PlayerController>
     {
-        [field: SerializeField] public float StartSlideSpeedThreshold { get; private set; } = 5f;
-        [SerializeField] private float enterSpeedMultiplier = 1.5f;
-        [SerializeField] private float friction = 5f;
+        [field: SerializeField] public float Speed { get; private set; } = 1.5f;
+        [SerializeField] private float decceleration = 5f;
         [SerializeField] private float controllerHeight = 1f;
-        [SerializeField] private float crouchSpeedThreshold = 0.01f;
         
         [Header("Camera Shift")]
         [SerializeField] private float enterCameraShiftDuration = 0.25f;
@@ -18,18 +16,15 @@ namespace PlayerStates
         [SerializeField] private float exitCameraShiftDuration = 0.25f;
         [SerializeField] private Ease exitCameraShiftEaseType = Ease.Linear;
 
-        private float currentSlideSpeed;
         private float originalControllerHeight;
-
+        
         private protected override void OnInit()
         {
             originalControllerHeight = context.Controller.height;
         }
-
+        
         private protected override void OnEnter()
         {
-            currentSlideSpeed = enterSpeedMultiplier * context.PlanarVelocity.magnitude;
-            
             context.ChangeControllerHeight(controllerHeight, enterCameraShiftDuration, enterCameraShiftEaseType);
         }
 
@@ -40,10 +35,12 @@ namespace PlayerStates
 
         private protected override void OnUpdate()
         {
-            currentSlideSpeed = Mathf.Lerp(currentSlideSpeed, 0f, friction * Time.deltaTime);
-            
             Vector3 moveDirection = Utils.GetCameraBasedMoveInput(CameraManager.Instance.CurrentCamera.transform, context.Input.MoveDirection);
-            Vector3 newVelocity = currentSlideSpeed * moveDirection;
+            
+            Vector3 targetVelocity = Speed * moveDirection;
+            Vector3 newVelocity = targetVelocity;
+            if(context.PlanarVelocity.magnitude > Speed)
+                newVelocity = Vector3.Lerp(context.PlanarVelocity, targetVelocity, decceleration * Time.deltaTime);
             
             context.SetPlanarVelocity(newVelocity);
             context.ApplyPlanarVelocity();
@@ -53,14 +50,11 @@ namespace PlayerStates
         {
 
         }
-        
+
         private protected override State<PlayerController> GetTransition()
         {
             if (!context.Input.InputActions.Player.Crouch.IsPressed())
                 return context.GroundedSuperState.IdleState;
-
-            if (currentSlideSpeed <= crouchSpeedThreshold + context.GroundedSuperState.CrouchState.Speed)
-                return context.GroundedSuperState.CrouchState;
             
             return null;
         }

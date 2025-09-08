@@ -46,16 +46,36 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58b13f7550760124682b7573fa3d4175, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Controller: {fileID: 6060882277315488858}
+  <Controller>k__BackingField: {fileID: 6060882277315488858}
+  cameraTarget: {fileID: 2280637525510121760}
   <GroundedSuperState>k__BackingField:
     <IdleState>k__BackingField:
-      friction: 20
-      stopDampThreshold: 1
+      decceleration: 20
       stopSpeedThreshold: 0.01
     <WalkState>k__BackingField:
       speed: 3
+      decceleration: 5
     <SprintState>k__BackingField:
-      speed: 6
+      targetSpeed: 6
+      acceleration: 5
+    <CrouchState>k__BackingField:
+      <Speed>k__BackingField: 1.5
+      decceleration: 5
+      controllerHeight: 1
+      enterCameraShiftDuration: 0.25
+      enterCameraShiftEaseType: 21
+      exitCameraShiftDuration: 0.25
+      exitCameraShiftEaseType: 21
+    <SlideState>k__BackingField:
+      <StartSlideSpeedThreshold>k__BackingField: 2.5
+      enterSpeedMultiplier: 2
+      friction: 2
+      controllerHeight: 0.75
+      crouchSpeedThreshold: 0.01
+      enterCameraShiftDuration: 0.25
+      enterCameraShiftEaseType: 21
+      exitCameraShiftDuration: 0.25
+      exitCameraShiftEaseType: 21
     <GroundCheckDistance>k__BackingField: -0.4
     <GroundCheckRadius>k__BackingField: 0.5
     groundLayerMask:

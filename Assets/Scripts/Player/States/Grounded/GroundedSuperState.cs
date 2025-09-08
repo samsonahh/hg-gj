@@ -8,30 +8,39 @@ namespace PlayerStates
     {
         public override State<PlayerController> InitialSubState => IdleState;
 
-        [field: SerializeField] public GroundedIdleState IdleState { get; private set; }
-        [field: SerializeField] public GroundedWalkState WalkState { get; private set; }
-        [field: SerializeField] public GroundedSprintState SprintState { get; private set; }
-        [field: SerializeField] public GroundedSlideState SlideState { get; private set; }
+        [field: SerializeField] public GroundedIdleState IdleState { get; private set; } = new();
+        [field: SerializeField] public GroundedWalkState WalkState { get; private set; } = new();
+        [field: SerializeField] public GroundedSprintState SprintState { get; private set; } = new();
+        [field: SerializeField] public GroundedCrouchState CrouchState { get; private set; } = new();
+        [field: SerializeField] public GroundedSlideState SlideState { get; private set; } = new();
 
         [field: Header("Config")]
         [field: SerializeField] public float GroundCheckDistance { get; private set; } = 1f;
         [field: SerializeField] public float GroundCheckRadius { get; private set; } = 1f;
         [SerializeField] private LayerMask groundLayerMask;
         [SerializeField] private float jumpHeight = 1.5f;
-        [field: SerializeField, ReadOnly, AllowNesting] public bool IsGrounded { get; private set; }
+        [SerializeField] private float coyoteTime = 0.5f;
+        private bool hasJumped;
+        public bool IsGrounded { get; private set; }
 
         private protected override void InitializeSubStates()
         {
             IdleState.Init(SubStateMachine, context);
             WalkState.Init(SubStateMachine, context);
             SprintState.Init(SubStateMachine, context);
+            CrouchState.Init(SubStateMachine, context);
             SlideState.Init(SubStateMachine, context);
         }
 
         private protected override void OnEnter()
         {
+            context.SetVelocity(context.PlanarVelocity);
+
+            hasJumped = false;
+            
             context.Input.Jump += Input_Jump;
             context.Input.Sprint += Input_Sprint;
+            context.Input.Crouch += Input_Crouch;
         }
 
         private protected override void OnExit()
@@ -40,6 +49,7 @@ namespace PlayerStates
             {
                 context.Input.Jump -= Input_Jump;
                 context.Input.Sprint -= Input_Sprint;
+                context.Input.Crouch -= Input_Crouch;
             }
         }
 
@@ -56,7 +66,10 @@ namespace PlayerStates
         private protected override State<PlayerController> GetTransition()
         {
             if (!IsGrounded)
+            {
+                context.AirborneSuperState.ActivateCoyoteTime(coyoteTime);
                 return context.AirborneSuperState;
+            }
 
             return null;
         }
@@ -66,7 +79,7 @@ namespace PlayerStates
             IsGrounded = Physics.CheckSphere(context.transform.position + GroundCheckDistance * Vector3.down, GroundCheckRadius, groundLayerMask);
         }
 
-        private void Input_Jump()
+        public void Input_Jump()
         {
             if (jumpHeight <= 0f)
                 return;
@@ -74,9 +87,14 @@ namespace PlayerStates
             if (!IsGrounded)
                 return;
 
-            float jumpForce = Mathf.Sqrt(2 * jumpHeight * Mathf.Abs(Physics.gravity.y)); // Equation to calculate jump force based on desired height
+            if (hasJumped)
+                return;
 
-            // stateMachine.ChangeState(context.AirborneSuperState);
+            float jumpForce = Mathf.Sqrt(2 * jumpHeight * Mathf.Abs(Physics.gravity.y)); // Equation to calculate jump force based on desired height
+            context.SetVelocity(context.Velocity.WithY(jumpForce));
+            hasJumped = true;
+            
+            stateMachine.ChangeState(context.AirborneSuperState);
         }
         
         private void Input_Sprint(bool isSprinting)
@@ -85,6 +103,20 @@ namespace PlayerStates
                 return;
             
             SubStateMachine.ChangeState(SprintState);
+        }
+        
+        private void Input_Crouch(bool isCrouching)
+        {
+            if (!isCrouching)
+                return;
+
+            if (context.PlanarVelocity.magnitude > SlideState.StartSlideSpeedThreshold)
+            {
+                SubStateMachine.ChangeState(SlideState);
+                return;
+            }
+            
+            SubStateMachine.ChangeState(CrouchState);
         }
     }
 }

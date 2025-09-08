@@ -1,3 +1,4 @@
+using DG.Tweening;
 using NaughtyAttributes;
 using UnityEngine;
 using PlayerStates;
@@ -7,8 +8,12 @@ public class PlayerController : MonoBehaviour
     public InputManager Input { get; private set; } // for easier access
 
     [field: Header("References")]
-    [field: SerializeField] public CharacterController Controller;
+    [field: SerializeField] public CharacterController Controller { get; private set; }
+    [SerializeField] private Transform cameraTarget;
 
+    [Header("Config")] 
+    [SerializeField] private float strictSpeedCap = 100f;
+    
     private StateMachine<PlayerController> stateMachine;
     [field: Header("States")]
     [field: SerializeField] public GroundedSuperState GroundedSuperState { get; private set; } = new();
@@ -19,7 +24,8 @@ public class PlayerController : MonoBehaviour
     private Vector3 velocity;
     [ShowNativeProperty] public Vector3 Velocity => velocity;
     public Vector3 PlanarVelocity => velocity.WithY(0f);
-
+    [ShowNativeProperty] private float currentSpeed => PlanarVelocity.magnitude;
+    
     private void Awake()
     {
         Input = InputManager.Instance;
@@ -50,6 +56,12 @@ public class PlayerController : MonoBehaviour
             Gizmos.color = Color.red;
             Gizmos.DrawWireSphere(transform.position + GroundedSuperState.GroundCheckDistance * Vector3.down, GroundedSuperState.GroundCheckRadius);
         }
+
+        if (cameraTarget != null)
+        {
+            Gizmos.color = Color.blue;
+            Gizmos.DrawWireSphere(cameraTarget.position, 0.1f);
+        }
     }
 
     private void Update()
@@ -57,6 +69,9 @@ public class PlayerController : MonoBehaviour
         GroundedSuperState.CheckGrounded();
 
         stateMachine.Update();
+        
+        // Strict cap
+        SetPlanarVelocity(Vector3.ClampMagnitude(PlanarVelocity, strictSpeedCap));
     }
 
     private void FixedUpdate()
@@ -65,6 +80,7 @@ public class PlayerController : MonoBehaviour
     }
     
     public void SetVelocity(Vector3 newVelocity) => velocity = newVelocity;
+    
     public void SetPlanarVelocity(Vector3 newVelocity) => velocity = new Vector3(newVelocity.x, velocity.y, newVelocity.z);
     
     public void ApplyPlanarVelocity() => Controller.Move(Time.deltaTime * velocity.WithY(0));
@@ -73,6 +89,22 @@ public class PlayerController : MonoBehaviour
     {
         velocity += Time.deltaTime * Physics.gravity;
         
-        Controller.Move(velocity.y * Time.deltaTime * Vector3.down);
+        Controller.Move(velocity.y * Time.deltaTime * Vector3.up);
+    }
+
+    public void ChangeControllerHeight(float newHeight)
+    {
+        Controller.height = newHeight;
+        Controller.center = Controller.center.WithY(newHeight / 2f);
+    }
+    
+    public void ChangeControllerHeight(float newHeight, float cameraShiftDuration, Ease cameraShiftEaseType)
+    {
+        Controller.height = newHeight;
+        Controller.center = Controller.center.WithY(newHeight / 2f);
+
+        cameraTarget.DOKill();
+        cameraTarget.DOLocalMoveY(1.75f / 2f * newHeight, cameraShiftDuration)
+            .SetEase(cameraShiftEaseType);
     }
 }
