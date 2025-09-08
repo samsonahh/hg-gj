@@ -48,8 +48,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Controller: {fileID: 6060882277315488858}
   <GroundedSuperState>k__BackingField:
+    <IdleState>k__BackingField:
+      friction: 20
+      stopDampThreshold: 1
+      stopSpeedThreshold: 0.01
     <WalkState>k__BackingField:
       speed: 3
+    <SprintState>k__BackingField:
+      speed: 6
     <GroundCheckDistance>k__BackingField: -0.4
     <GroundCheckRadius>k__BackingField: 0.5
     groundLayerMask:

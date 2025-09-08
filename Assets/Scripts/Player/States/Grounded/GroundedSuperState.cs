@@ -31,6 +31,7 @@ namespace PlayerStates
         private protected override void OnEnter()
         {
             context.Input.Jump += Input_Jump;
+            context.Input.Sprint += Input_Sprint;
         }
 
         private protected override void OnExit()
@@ -38,6 +39,7 @@ namespace PlayerStates
             if (context.Input != null)
             {
                 context.Input.Jump -= Input_Jump;
+                context.Input.Sprint -= Input_Sprint;
             }
         }
 
@@ -74,7 +76,15 @@ namespace PlayerStates
 
             float jumpForce = Mathf.Sqrt(2 * jumpHeight * Mathf.Abs(Physics.gravity.y)); // Equation to calculate jump force based on desired height
 
-            stateMachine.ChangeState(context.AirborneSuperState);
+            // stateMachine.ChangeState(context.AirborneSuperState);
+        }
+        
+        private void Input_Sprint(bool isSprinting)
+        {
+            if (!isSprinting)
+                return;
+            
+            SubStateMachine.ChangeState(SprintState);
         }
     }
 }

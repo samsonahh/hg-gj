@@ -1,3 +1,4 @@
+using NaughtyAttributes;
 using UnityEngine;
 using PlayerStates;
 
@@ -15,7 +16,9 @@ public class PlayerController : MonoBehaviour
     [field: SerializeField] public WallRunState WallRunState { get; private set; } = new();
 
     public bool IsGrounded => GroundedSuperState.IsGrounded; // for easier access
-    public Vector3 Velocity { get; private set; }
+    private Vector3 velocity;
+    [ShowNativeProperty] public Vector3 Velocity => velocity;
+    public Vector3 PlanarVelocity => velocity.WithY(0f);
 
     private void Awake()
     {
@@ -61,5 +64,15 @@ public class PlayerController : MonoBehaviour
         stateMachine.FixedUpdate();
     }
     
-    public void SetVelocity(Vector3 newVelocity) => Velocity = newVelocity;
+    public void SetVelocity(Vector3 newVelocity) => velocity = newVelocity;
+    public void SetPlanarVelocity(Vector3 newVelocity) => velocity = new Vector3(newVelocity.x, velocity.y, newVelocity.z);
+    
+    public void ApplyPlanarVelocity() => Controller.Move(Time.deltaTime * velocity.WithY(0));
+
+    public void ApplyGravity()
+    {
+        velocity += Time.deltaTime * Physics.gravity;
+        
+        Controller.Move(velocity.y * Time.deltaTime * Vector3.down);
+    }
 }

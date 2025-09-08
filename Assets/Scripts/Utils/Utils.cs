@@ -5,6 +5,38 @@ using UnityEngine.SceneManagement;
 
 public static class Utils
 {
+    /// <summary>
+    /// Returns a new Vector3 with one component (x, y, or z) set to a new value.
+    /// Vector3.x = x does not work as expected in Unity, so this is a workaround.
+    /// </summary>
+    public static Vector3 WithX(this Vector3 vector, float x) => new Vector3(x, vector.y, vector.z);
+    /// <summary>
+    /// Returns a new Vector3 with one component (x, y, or z) set to a new value.
+    /// Vector3.z = z does not work as expected in Unity, so this is a workaround.
+    /// </summary>
+    public static Vector3 WithY(this Vector3 vector, float y) => new Vector3(vector.x, y, vector.z);
+    /// <summary>
+    /// Returns a new Vector3 with one component (x, y, or z) set to a new value.
+    /// Vector3.z = z does not work as expected in Unity, so this is a workaround.
+    /// </summary>
+    public static Vector3 WithZ(this Vector3 vector, float z) => new Vector3(vector.x, vector.y, z);
+
+    /// <summary>
+    /// Sets the x component of a Vector3 to a new value.
+    /// Vector3.x = x does not work as expected in Unity, so this is a workaround.
+    /// </summary>
+    public static void SetX(this ref Vector3 vector, float x) => vector = vector.WithX(x);
+    /// <summary>
+    /// Sets the y component of a Vector3 to a new value.
+    /// Vector3.y = y does not work as expected in Unity, so this is a workaround.
+    /// </summary>
+    public static void SetY(this ref Vector3 vector, float y) => vector = vector.WithY(y);
+    /// <summary>
+    /// Sets the z component of a Vector3 to a new value.
+    /// Vector3.z = z does not work as expected in Unity, so this is a workaround.
+    /// </summary>
+    public static void SetZ(this ref Vector3 vector, float z) => vector = vector.WithZ(z);
+    
     public static SceneReference GetCurrentScene() => SceneReference.FromScenePath(SceneManager.GetActiveScene().path);
 
     public static float ConvertVolumeToDecibels(float volume) => Mathf.Log10(Mathf.Clamp(volume, 0.0001f, 1f)) * 20f;
