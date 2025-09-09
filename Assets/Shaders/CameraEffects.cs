@@ -5,6 +5,7 @@ using UnityEngine;
 [RequireComponent(typeof(Camera))]
 public class CameraEffects : MonoBehaviour
 {
+    [ExecuteAlways]
     [Header("Shader / Material")]
     [SerializeField] private Shader effectShader;
     [SerializeField] private Material materialOverride;

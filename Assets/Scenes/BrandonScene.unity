@@ -50763,7 +50763,7 @@ MonoBehaviour:
   materialOverride: {fileID: 0}
   tint: {r: 1, g: 1, b: 1, a: 1}
   tintIntensity: 0
-  posterizeSteps: 32
+  posterizeSteps: 10
   enableVignette: 0
   vignetteRadius: 0.65
   vignetteSoftness: 0.2
