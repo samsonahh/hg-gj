@@ -50765,8 +50765,14 @@ MonoBehaviour:
   tintIntensity: 0
   posterizeSteps: 10
   enableVignette: 0
-  vignetteRadius: 0.65
+  vignetteInnerRadius: 0.3
+  vignetteOuterRadius: 0.75
   vignetteSoftness: 0.2
+  vignetteIntensity: 1
+  vignetteColor: {r: 0, g: 0, b: 0, a: 1}
+  vignetteCenter: {x: 0.5, y: 0.5}
+  vignetteAxisScale: {x: 1, y: 1}
+  vignetteRoundness: 1
   enableOutline: 0
   silhouetteOnly: 0
   outlineColor: {r: 0, g: 0, b: 0, a: 1}
@@ -50775,6 +50781,12 @@ MonoBehaviour:
   outlineSoftness: 0.002
   outlineStrength: 1
   silhouetteBackgroundThreshold: 0.995
+  enableFilmGrain: 0
+  grainIntensity: 0.35
+  grainScale: 320
+  grainSpeed: 1.5
+  grainLuminanceResponse: 1
+  grainSeedJitter: {x: 37.2, y: 91.7}
 --- !u!114 &1560499415
 MonoBehaviour:
   m_ObjectHideFlags: 0
