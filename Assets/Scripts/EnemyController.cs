@@ -33,9 +33,9 @@ public class EnemyController : MonoBehaviour
         }
     }
 
-    private void OnDrawGizmos()
-    {
-        Gizmos.color = Color.gray;
-        Gizmos.DrawWireSphere(detectionPoint.position, radius);
-    }
+    //private void OnDrawGizmos()
+    //{
+    //    Gizmos.color = Color.gray;
+    //    Gizmos.DrawWireSphere(detectionPoint.position, radius);
+    //}
 }
