@@ -103,7 +103,7 @@ public class EnemyAI : MonoBehaviour
 
     void AttackPlayer()
     {
-        if(_hasAlreadyAttacked)
+        if(!_hasAlreadyAttacked)
         {
             // Attack Code Will Go Here
             Debug.Log("Attacking Player");
