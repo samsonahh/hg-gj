@@ -34,11 +34,6 @@ public class EnemyAI : MonoBehaviour
     bool _isPlayerInAttackRange;
     [SerializeField] EnemyAIState _currentState;
 
-    [Header("Rendering Settings")]
-    public Material attackMat;
-    Renderer _renderer;
-    Material _originalMat;
-
     // dist = Shorthand for "distance"
     float _DIST_FROM_GROUND = 2f;
     float _REACHED_WALK_POINT_DIST = 1f;
