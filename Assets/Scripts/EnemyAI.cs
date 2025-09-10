@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.AI;
-using System.Collections;
 
 // Credits to "Dave / GameDevelopment" (https://www.youtube.com/watch?v=UjkSFoLxesw)
 
@@ -107,7 +106,7 @@ public class EnemyAI : MonoBehaviour
         if(_hasAlreadyAttacked)
         {
             // Attack Code Will Go Here
-            StartCoroutine(Attack());
+            Debug.Log("Attacking Player");
 
             _hasAlreadyAttacked = true;
             Invoke(nameof(ResetAttack), timeBetweenAttacks);
@@ -115,13 +114,6 @@ public class EnemyAI : MonoBehaviour
     }
 
     void ResetAttack() => _hasAlreadyAttacked = false;
-
-    IEnumerator Attack()
-    {
-        _renderer.material = attackMat;
-        yield return new WaitForSeconds(1f);
-        _renderer.material = _originalMat;
-    }
 
     private void OnDrawGizmos()
     {
