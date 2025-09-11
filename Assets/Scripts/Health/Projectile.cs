@@ -1,0 +1,30 @@
+using UnityEngine;
+
+public class Projectile : MonoBehaviour
+{
+    [SerializeField] private float speed = 20f; // Transform speed
+    [SerializeField] private float decayTime = 3f; // Decay time in seconds
+    private int damage = 10;
+
+    public void SetDamage(int value) => damage = value;
+
+    private void Start()
+    {
+        Destroy(gameObject, decayTime);
+    }
+
+    private void Update()
+    {
+        transform.position += transform.forward * speed * Time.deltaTime;
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        Health health = collision.gameObject.GetComponent<Health>();
+        if (health != null)
+        {
+            health.TakeDamage(damage);
+        }
+        Destroy(gameObject);
+    }
+}
