@@ -19,6 +19,7 @@ namespace PlayerStates
         [field: SerializeField] public float GroundCheckDistance { get; private set; } = 1f;
         [field: SerializeField] public float GroundCheckRadius { get; private set; } = 1f;
         [SerializeField] private LayerMask groundLayerMask;
+        [SerializeField] private float groundedYVelocity = -5f;
         [SerializeField] private float jumpHeight = 1.5f;
         [SerializeField] private float coyoteTime = 0.5f;
         private bool hasJumped;
@@ -35,12 +36,11 @@ namespace PlayerStates
 
         private protected override void OnEnter()
         {
-            context.SetVelocity(context.PlanarVelocity);
+            context.SetVelocity(new Vector3(context.PlanarVelocity.x, groundedYVelocity, context.PlanarVelocity.z));
 
             hasJumped = false;
             
             context.Input.Jump += Input_Jump;
-            context.Input.Sprint += Input_Sprint;
             context.Input.Crouch += Input_Crouch;
         }
 
@@ -49,14 +49,13 @@ namespace PlayerStates
             if (context.Input != null)
             {
                 context.Input.Jump -= Input_Jump;
-                context.Input.Sprint -= Input_Sprint;
                 context.Input.Crouch -= Input_Crouch;
             }
         }
 
         private protected override void OnUpdate()
         {
-        
+            context.ApplyGravity();
         }
 
         private protected override void OnFixedUpdate()
@@ -70,11 +69,13 @@ namespace PlayerStates
             {
                 if (!hasJumped)
                     context.AirborneSuperState.ActivateCoyoteTime(coyoteTime, Input_Jump);
-                return context.AirborneSuperState;
+                //return context.AirborneSuperState;
+                return null;
             }
-
+            
             return null;
         }
+        
 
         public void CheckGrounded()
         {
@@ -94,14 +95,6 @@ namespace PlayerStates
             hasJumped = true;
             
             stateMachine.ChangeState(context.AirborneSuperState);
-        }
-        
-        private void Input_Sprint(bool isSprinting)
-        {
-            if (!isSprinting)
-                return;
-            
-            SubStateMachine.ChangeState(SprintState);
         }
         
         private void Input_Crouch(bool isCrouching)

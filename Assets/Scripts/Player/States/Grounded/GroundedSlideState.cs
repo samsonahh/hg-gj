@@ -1,5 +1,6 @@
 using UnityEngine;
 using DG.Tweening;
+using NaughtyAttributes;
 
 namespace PlayerStates
 {
@@ -10,7 +11,6 @@ namespace PlayerStates
         [SerializeField] private float enterSpeedMultiplier = 1.5f;
         [SerializeField] private float friction = 5f;
         [SerializeField] private float controllerHeight = 1f;
-        [SerializeField] private float crouchSpeedThreshold = 0.01f;
         
         [Header("Camera Shift")]
         [SerializeField] private float enterCameraShiftDuration = 0.25f;
@@ -59,7 +59,7 @@ namespace PlayerStates
             if (!context.Input.InputActions.Player.Crouch.IsPressed())
                 return context.GroundedSuperState.IdleState;
 
-            if (currentSlideSpeed <= crouchSpeedThreshold + context.GroundedSuperState.CrouchState.Speed)
+            if (currentSlideSpeed <= context.GroundedSuperState.CrouchState.Speed)
                 return context.GroundedSuperState.CrouchState;
             
             return null;

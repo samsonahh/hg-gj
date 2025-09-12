@@ -39,7 +39,7 @@ namespace PlayerStates
             
             Vector3 targetVelocity = Speed * moveDirection;
             Vector3 newVelocity = targetVelocity;
-            if(context.PlanarVelocity.magnitude > Speed)
+            if (context.PlanarVelocity.magnitude > Speed)
                 newVelocity = Vector3.Lerp(context.PlanarVelocity, targetVelocity, decceleration * Time.deltaTime);
             
             context.SetPlanarVelocity(newVelocity);
