@@ -69,8 +69,7 @@ namespace PlayerStates
             {
                 if (!hasJumped)
                     context.AirborneSuperState.ActivateCoyoteTime(coyoteTime, Input_Jump);
-                //return context.AirborneSuperState;
-                return null;
+                return context.AirborneSuperState;
             }
             
             return null;

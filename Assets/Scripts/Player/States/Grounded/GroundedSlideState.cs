@@ -43,6 +43,7 @@ namespace PlayerStates
             currentSlideSpeed = Mathf.Lerp(currentSlideSpeed, 0f, friction * Time.deltaTime);
             
             Vector3 moveDirection = Utils.GetCameraBasedMoveInput(CameraManager.Instance.CurrentCamera.transform, context.Input.MoveDirection);
+            moveDirection = moveDirection == Vector3.zero ? CameraManager.Instance.CurrentCamera.transform.forward.WithY(0f) : moveDirection;
             Vector3 newVelocity = currentSlideSpeed * moveDirection;
             
             context.SetPlanarVelocity(newVelocity);
