@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.ProBuilder;
+using DG.Tweening;
 
 public class Shotgun : MonoBehaviour
 {
@@ -16,6 +17,18 @@ public class Shotgun : MonoBehaviour
     [SerializeField] private Camera playerCamera; // Assign in inspector or at runtime
     [SerializeField] private float maxRange = 100f;
 
+    [Header("Flip Config")]
+    [SerializeField] private float flipDuration = 0.5f;
+    [SerializeField] private float flipAngle = 360f;
+
+    private bool canFire = true;
+    private Quaternion originalRotation;
+
+    private void Awake()
+    {
+        originalRotation = transform.localRotation;
+    }
+
     private void OnEnable()
     {
         if (InputManager.Instance != null)
@@ -30,10 +43,27 @@ public class Shotgun : MonoBehaviour
 
     public void Fire()
     {
-        Vector3 shootDirection = GetShootDirection();
+        if (!canFire)
+            return;
 
+        canFire = false;
+
+        Vector3 shootDirection = GetShootDirection();
         FireProjectile(shootDirection, -spreadAngle / 2f);
         FireProjectile(shootDirection, spreadAngle / 2f);
+
+        // Start the flip tween on the X-axis, spinning backwards (negative)
+        transform.DOLocalRotate(
+            originalRotation.eulerAngles + new Vector3(-flipAngle, 0, 0),
+            flipDuration,
+            RotateMode.FastBeyond360
+        )
+        .SetEase(Ease.OutCubic)
+        .OnComplete(() =>
+        {
+            transform.localRotation = originalRotation;
+            canFire = true;
+        });
     }
 
     private Vector3 GetShootDirection()
