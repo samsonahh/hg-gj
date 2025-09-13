@@ -20,11 +20,20 @@ public class Projectile : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
+        // Try Health component
         Health health = collision.gameObject.GetComponent<Health>();
         if (health != null)
         {
             health.TakeDamage(damage);
         }
+
+        // Try HealthEntity component
+        HealthEntity healthEntity = collision.gameObject.GetComponent<HealthEntity>();
+        if (healthEntity != null)
+        {
+            healthEntity.TakeDamage(damage);
+        }
+
         Destroy(gameObject);
     }
 }

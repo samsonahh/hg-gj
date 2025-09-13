@@ -39,6 +39,11 @@ public class Spawner : MonoBehaviour
         {
             health.OnDied += () => OnInstanceDied(instance);
         }
+        HealthEntity healthEntity = instance.GetComponent<HealthEntity>();
+        if (healthEntity != null)
+        {
+            healthEntity.OnDied += () => OnInstanceDied(instance);
+        }
     }
 
     private void OnInstanceDied(GameObject instance)

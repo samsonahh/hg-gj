@@ -99039,6 +99039,10 @@ PrefabInstance:
       propertyPath: playerCamera
       value: 
       objectReference: {fileID: 1560499416}
+    - target: {fileID: 3207639923118452839, guid: a3c4435ee71cb294898ea26fd18ad5ee, type: 3}
+      propertyPath: damagePerProjectile
+      value: 10
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
