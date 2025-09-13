@@ -20,7 +20,7 @@ public class PlayerController : MonoBehaviour
     [field: SerializeField] public AirborneSuperState AirborneSuperState { get; private set; } = new();
     [field: SerializeField] public WallRunState WallRunState { get; private set; } = new();
 
-    public bool IsGrounded => GroundedSuperState.IsGrounded; // for easier access
+    [ShowNativeProperty] public bool IsGrounded => GroundedSuperState.IsGrounded; // for easier access
     private Vector3 velocity;
     [ShowNativeProperty] public Vector3 Velocity => velocity;
     public Vector3 PlanarVelocity => velocity.WithY(0f);
@@ -87,7 +87,8 @@ public class PlayerController : MonoBehaviour
 
     public void ApplyGravity()
     {
-        velocity += Time.deltaTime * Physics.gravity;
+        if(!IsGrounded)
+            velocity += Time.deltaTime * Physics.gravity;
         
         Controller.Move(velocity.y * Time.deltaTime * Vector3.up);
     }
@@ -100,9 +101,8 @@ public class PlayerController : MonoBehaviour
     
     public void ChangeControllerHeight(float newHeight, float cameraShiftDuration, Ease cameraShiftEaseType)
     {
-        Controller.height = newHeight;
-        Controller.center = Controller.center.WithY(newHeight / 2f);
-
+        ChangeControllerHeight(newHeight);
+        
         cameraTarget.DOKill();
         cameraTarget.DOLocalMoveY(1.75f / 2f * newHeight, cameraShiftDuration)
             .SetEase(cameraShiftEaseType);

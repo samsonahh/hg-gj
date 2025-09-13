@@ -27,28 +27,16 @@ namespace PlayerStates
 
         private protected override void OnExit()
         {
-            if(coyoteTimeData != null)
-            {
-                if(context.Input != null)
-                    context.Input.Jump -= coyoteTimeData.Value.jumpFunction;
-            }
+            if(coyoteTimeData != null && context.Input !=null)
+                context.Input.Jump -= coyoteTimeData.Value.jumpFunction;
         }
 
         private protected override void OnUpdate()
         {
             Timer += Time.deltaTime;
-            
-            if(coyoteTimeData != null)
-            {
-                coyoteTimeData = (coyoteTimeData.Value.timer - Time.deltaTime, coyoteTimeData.Value.jumpFunction);
-                if(coyoteTimeData.Value.timer <= 0f)
-                {
-                    if (context.Input != null)
-                        context.Input.Jump -= coyoteTimeData.Value.jumpFunction;
-                    coyoteTimeData = null;
-                }
-            }
 
+            UpdateCoyoteTime();
+            
             context.ApplyPlanarVelocity();
             context.ApplyGravity();
         }
@@ -70,6 +58,20 @@ namespace PlayerStates
         {
             coyoteTimeData = (duration, jumpCallback);
             context.Input.Jump += jumpCallback;
+        }
+
+        private void UpdateCoyoteTime()
+        {
+            if (coyoteTimeData == null)
+                return;
+            
+            coyoteTimeData = (coyoteTimeData.Value.timer - Time.deltaTime, coyoteTimeData.Value.jumpFunction);
+            if(coyoteTimeData.Value.timer <= 0f)
+            {
+                if (context.Input != null)
+                    context.Input.Jump -= coyoteTimeData.Value.jumpFunction;
+                coyoteTimeData = null;
+            }
         }
     }
 }

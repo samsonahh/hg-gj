@@ -49,6 +49,9 @@ namespace PlayerStates
 
         private protected override State<PlayerController> GetTransition()
         {
+            if (context.Input.MoveDirection == Vector2.zero)
+                return context.GroundedSuperState.IdleState;
+            
             if (!context.Input.InputActions.Player.Sprint.IsPressed())
                 return context.GroundedSuperState.IdleState;
 

@@ -40,6 +40,9 @@ namespace PlayerStates
         {
             if (context.Input.MoveDirection == Vector2.zero)
                 return context.GroundedSuperState.IdleState;
+            
+            if (context.Input.InputActions.Player.Sprint.IsPressed())
+                return context.GroundedSuperState.SprintState;
 
             return null;
         }
