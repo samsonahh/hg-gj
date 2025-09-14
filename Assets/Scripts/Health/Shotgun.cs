@@ -1,6 +1,7 @@
 using UnityEngine;
-using UnityEngine.ProBuilder;
 using DG.Tweening;
+using UnityEngine.ProBuilder;
+using System;
 
 public class Shotgun : MonoBehaviour
 {
@@ -9,6 +10,12 @@ public class Shotgun : MonoBehaviour
     [SerializeField] private Transform firePoint;
     [SerializeField] private float spreadAngle = 10f;
     [SerializeField] private int damagePerProjectile = 10;
+    [SerializeField] private int maxAmmo = 8;
+    [SerializeField] private int currentAmmo = 8;
+
+    public int CurrentAmmo => currentAmmo;
+    public int MaxAmmo => maxAmmo;
+    public event Action<int, int> OnAmmoChanged = delegate { };
 
     [Header("Debug Config")]
     [SerializeField] private bool showGizmo = true;
@@ -53,10 +60,12 @@ public class Shotgun : MonoBehaviour
 
     public void Fire()
     {
-        if (!canFire)
+        if (!canFire || currentAmmo <= 0)
             return;
 
         canFire = false;
+        currentAmmo--;
+        OnAmmoChanged.Invoke(currentAmmo, maxAmmo);
 
         Vector3 shootDirection = GetShootDirection();
         FireProjectile(shootDirection, 0f);
@@ -76,7 +85,7 @@ public class Shotgun : MonoBehaviour
             new Trick(new Vector3(-360f, 720f, 0f)),
         };
 
-        Trick trick = tricks[Random.Range(0, tricks.Length)];
+        Trick trick = tricks[UnityEngine.Random.Range(0, tricks.Length)];
         Vector3 targetEuler = originalRotation.eulerAngles + trick.rotation;
 
         transform.DOLocalRotate(
@@ -145,5 +154,11 @@ public class Shotgun : MonoBehaviour
 
         Gizmos.DrawLine(firePoint.position, firePoint.position + leftDir * length);
         Gizmos.DrawLine(firePoint.position, firePoint.position + rightDir * length);
+    }
+
+    public void Reload()
+    {
+        currentAmmo = maxAmmo;
+        OnAmmoChanged.Invoke(currentAmmo, maxAmmo);
     }
 }

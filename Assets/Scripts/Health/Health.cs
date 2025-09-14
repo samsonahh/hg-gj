@@ -76,4 +76,9 @@ public class Health : MonoBehaviour
         OnDied.Invoke();
         Destroy(gameObject);
     }
+    public void AddHealth(int amount)
+    {
+        currentHealth = Mathf.Clamp(currentHealth + amount, 0, maxHealth);
+        // add some UI feedback here
+    }
 }

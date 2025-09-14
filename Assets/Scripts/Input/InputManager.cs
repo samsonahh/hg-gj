@@ -13,6 +13,7 @@ public class InputManager : Singleton<InputManager>, IPlayerActions, IUIActions
     public event Action<bool> Sprint = delegate { };
     public event Action<bool> Crouch = delegate { };
     public event Action Shoot = delegate { };
+    public event Action<Vector2> Scroll = delegate { };
 
     private protected override void Awake()
     {
@@ -134,6 +135,11 @@ public class InputManager : Singleton<InputManager>, IPlayerActions, IUIActions
             return;
 
         GameManager.Instance.ChangeState(GameState.Playing);
+    }
+    public void OnScroll(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+            Scroll?.Invoke(context.ReadValue<Vector2>());
     }
     public void OnPoint(InputAction.CallbackContext context)
     {
