@@ -21,7 +21,6 @@ namespace PlayerStates
         {
             Vector3 moveDirection = Utils.GetCameraBasedMoveInput(CameraManager.Instance.CurrentCamera.transform, context.Input.MoveDirection);
             Vector3 targetVelocity = context.PlanarVelocity + acceleration * Time.deltaTime * moveDirection;
-            targetVelocity = Vector3.ClampMagnitude(targetVelocity, context.AirborneSuperState.OnEnterPlanarSpeed);
             
             context.SetPlanarVelocity(targetVelocity);
             context.ApplyPlanarVelocity();

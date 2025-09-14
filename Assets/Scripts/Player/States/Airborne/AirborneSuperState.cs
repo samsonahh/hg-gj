@@ -17,8 +17,6 @@ namespace PlayerStates
         public float Timer { get; private set; }
 
         (float timer, Action jumpFunction)? coyoteTimeData;
-        
-        public float OnEnterPlanarSpeed { get; private set; }
 
         private protected override void InitializeSubStates()
         {
@@ -29,7 +27,6 @@ namespace PlayerStates
         private protected override void OnEnter()
         {
             Timer = 0f;
-            OnEnterPlanarSpeed = context.PlanarVelocity.magnitude;
         }
 
         private protected override void OnExit()
