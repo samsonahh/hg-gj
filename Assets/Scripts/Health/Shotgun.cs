@@ -19,6 +19,7 @@ public class Shotgun : MonoBehaviour
 
     [Header("Flip Config")]
     [SerializeField] private float defaultFlipAngle = 360f;
+    [SerializeField] private float trickDuration = 1.0f; // All tricks use this duration
 
     private bool canFire = true;
     private Quaternion originalRotation;
@@ -27,11 +28,9 @@ public class Shotgun : MonoBehaviour
     private struct Trick
     {
         public Vector3 rotation;
-        public float duration;
-        public Trick(Vector3 rotation, float duration)
+        public Trick(Vector3 rotation)
         {
             this.rotation = rotation;
-            this.duration = duration;
         }
     }
 
@@ -60,24 +59,21 @@ public class Shotgun : MonoBehaviour
         canFire = false;
 
         Vector3 shootDirection = GetShootDirection();
-        FireProjectile(shootDirection, -spreadAngle / 2f);
-        FireProjectile(shootDirection, spreadAngle / 2f);
+        FireProjectile(shootDirection, 0f);
 
-        // Library for tricks
+        // Library for tricks (all use the same duration)
         Trick[] tricks = new Trick[]
         {
-            // Casual flips
-            new Trick(new Vector3(-360f, 0f, 0f), 0.5f),    // Kickflip (backward flip)
-            new Trick(new Vector3(360f, 0f, 0f), 0.5f),     // Heelflip (forward flip)
-            new Trick(new Vector3(0f, 360f, 0f), 0.7f),     // 360 Shuvit (horizontal spin)
-            new Trick(new Vector3(-180f, 0f, 360f), 0.8f),  // Impossible (half flip + full roll)
-            // More complex combos (3 is buggy)
-            new Trick(new Vector3(-540f, 180f, 0f), 1.0f),  // Bigspin (1.5x flip + half spin)
-            new Trick(new Vector3(-360f, 0f, 720f), 1.2f),  // Double roll + flip
-            new Trick(new Vector3(-720f, 360f, 360f), 1.5f),// Double flip + spin + roll
-            new Trick(new Vector3(-360f, 360f, 360f), 1.0f),// All axis 360
-            new Trick(new Vector3(-1080f, 0f, 0f), 1.8f),   // Triple flip (3x flip)
-            new Trick(new Vector3(-360f, 720f, 0f), 1.3f),  // Flip + double spin
+            new Trick(new Vector3(-360f, 0f, 0f)),
+            new Trick(new Vector3(360f, 0f, 0f)),
+            new Trick(new Vector3(0f, 360f, 0f)),
+            new Trick(new Vector3(-180f, 0f, 360f)),
+            new Trick(new Vector3(-540f, 180f, 0f)),
+            new Trick(new Vector3(-360f, 0f, 720f)),
+            new Trick(new Vector3(-720f, 360f, 360f)),
+            new Trick(new Vector3(-360f, 360f, 360f)),
+            new Trick(new Vector3(-1080f, 0f, 0f)),
+            new Trick(new Vector3(-360f, 720f, 0f)),
         };
 
         Trick trick = tricks[Random.Range(0, tricks.Length)];
@@ -85,14 +81,16 @@ public class Shotgun : MonoBehaviour
 
         transform.DOLocalRotate(
             targetEuler,
-            trick.duration,
+            trickDuration,
             RotateMode.FastBeyond360
         )
         .SetEase(Ease.OutCubic)
         .OnComplete(() =>
         {
-            transform.localRotation = originalRotation;
-            canFire = true;
+            // Smoothly rotate back to original rotation after the trick
+            transform.DOLocalRotateQuaternion(originalRotation, 0.3f)
+                .SetEase(Ease.InOutCubic)
+                .OnComplete(() => canFire = true);
         });
     }
 

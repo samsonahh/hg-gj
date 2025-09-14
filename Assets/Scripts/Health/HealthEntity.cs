@@ -41,7 +41,7 @@ public class HealthEntity : MonoBehaviour
         currentHealth = Mathf.Max(currentHealth - amount, 0);
         OnHealthChanged.Invoke(currentHealth, maxHealth);
 
-        // Instantiate damage effect at a random spawn position
+        // Instantiate damage effect at a random spawn position, not parented to this entity
         if (damageEffectPrefab != null && spawnPositions != null && spawnPositions.Count > 0)
         {
             int randomIndex = UnityEngine.Random.Range(0, spawnPositions.Count);
@@ -49,8 +49,7 @@ public class HealthEntity : MonoBehaviour
             GameObject effect = Instantiate(
                 damageEffectPrefab,
                 worldPos,
-                Quaternion.identity,
-                transform // parent to entity so it follows if it moves
+                Quaternion.identity
             );
             Destroy(effect, 1.5f);
         }

@@ -52,13 +52,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8a96fdeb6dc19794292543a19088b2d0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  projectilePrefab: {fileID: 146224877990961031, guid: 5ea8ff61ed22ea442aae204d4e5e24d4, type: 3}
+  projectilePrefab: {fileID: 137416940010652766, guid: c1bc66f68d0e2014cba62f6c6be0b8a7, type: 3}
   firePoint: {fileID: 4590475648429518814}
   spreadAngle: 2
-  damagePerProjectile: 50
+  damagePerProjectile: 10
   showGizmo: 1
   playerCamera: {fileID: 0}
   maxRange: 1000
+  defaultFlipAngle: 360
+  trickDuration: 1
 --- !u!1 &1464814398893144113
 GameObject:
   m_ObjectHideFlags: 0

@@ -51331,6 +51331,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7681144037728215229, guid: e775fd3391cf5504c9b1a65c3511b684, type: 3}
   m_PrefabInstance: {fileID: 5334606154398358499}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1560499424 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2774546339443180356, guid: e775fd3391cf5504c9b1a65c3511b684, type: 3}
+  m_PrefabInstance: {fileID: 5334606154398358499}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1560499406}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 421d2cdfa5d470246b892001f5445d4e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1615701467
 GameObject:
   m_ObjectHideFlags: 0
@@ -99032,16 +99043,12 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3207639923118452839, guid: a3c4435ee71cb294898ea26fd18ad5ee, type: 3}
-      propertyPath: spreadAngle
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 3207639923118452839, guid: a3c4435ee71cb294898ea26fd18ad5ee, type: 3}
       propertyPath: playerCamera
       value: 
       objectReference: {fileID: 1560499416}
     - target: {fileID: 3207639923118452839, guid: a3c4435ee71cb294898ea26fd18ad5ee, type: 3}
       propertyPath: damagePerProjectile
-      value: 10
+      value: 50
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -99120,6 +99127,10 @@ PrefabInstance:
       propertyPath: m_IncludeLayers.m_Bits
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6316639454391115150, guid: ba4d0746fceda0f419e2fc5757ede4e8, type: 3}
+      propertyPath: fovChanger
+      value: 
+      objectReference: {fileID: 1560499424}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
