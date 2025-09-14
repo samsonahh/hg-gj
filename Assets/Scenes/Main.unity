@@ -878,33 +878,9 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6012633994290963282, guid: ba4d0746fceda0f419e2fc5757ede4e8, type: 3}
-      propertyPath: <GroundedSuperState>k__BackingField.coyoteTime
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 6012633994290963282, guid: ba4d0746fceda0f419e2fc5757ede4e8, type: 3}
-      propertyPath: <GroundedSuperState>k__BackingField.<GroundLayerMask>k__BackingField.m_Bits
-      value: 8
-      objectReference: {fileID: 0}
-    - target: {fileID: 6012633994290963282, guid: ba4d0746fceda0f419e2fc5757ede4e8, type: 3}
-      propertyPath: <GroundedSuperState>k__BackingField.<SprintState>k__BackingField.targetSpeed
-      value: 30
-      objectReference: {fileID: 0}
-    - target: {fileID: 6012633994290963282, guid: ba4d0746fceda0f419e2fc5757ede4e8, type: 3}
-      propertyPath: <GroundedSuperState>k__BackingField.<SlideState>k__BackingField.controllerHeight
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6012633994290963282, guid: ba4d0746fceda0f419e2fc5757ede4e8, type: 3}
-      propertyPath: <GroundedSuperState>k__BackingField.<CrouchState>k__BackingField.controllerHeight
-      value: 1.2
-      objectReference: {fileID: 0}
-    - target: {fileID: 6012633994290963282, guid: ba4d0746fceda0f419e2fc5757ede4e8, type: 3}
       propertyPath: <GroundedSuperState>k__BackingField.<SprintState>k__BackingField.sprintParticleSystem
       value: 
       objectReference: {fileID: 1916340242}
-    - target: {fileID: 6060882277315488858, guid: ba4d0746fceda0f419e2fc5757ede4e8, type: 3}
-      propertyPath: m_MinMoveDistance
-      value: 0
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

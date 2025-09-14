@@ -7,22 +7,29 @@ namespace PlayerStates
     [System.Serializable]
     public class AirborneSuperState : SuperState<PlayerController>
     {
-        public override State<PlayerController> InitialSubState => null;
+        public override State<PlayerController> InitialSubState => IdleState;
 
+        [field: SerializeField] public AirborneIdleState IdleState { get; private set; } = new();
+        [field: SerializeField] public AirborneMoveState MoveState { get; private set; } = new();
+        
         [Header("Config")] 
         [SerializeField] private float regroundTimeThreshold = 0.1f;
         public float Timer { get; private set; }
 
         (float timer, Action jumpFunction)? coyoteTimeData;
+        
+        public float OnEnterPlanarSpeed { get; private set; }
 
         private protected override void InitializeSubStates()
         {
-
+            IdleState.Init(SubStateMachine, context);
+            MoveState.Init(SubStateMachine, context);
         }
 
         private protected override void OnEnter()
         {
             Timer = 0f;
+            OnEnterPlanarSpeed = context.PlanarVelocity.magnitude;
         }
 
         private protected override void OnExit()
@@ -37,7 +44,6 @@ namespace PlayerStates
 
             UpdateCoyoteTime();
             
-            context.ApplyPlanarVelocity();
             context.ApplyGravity();
         }
 

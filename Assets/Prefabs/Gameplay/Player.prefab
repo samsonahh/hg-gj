@@ -48,6 +48,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <Controller>k__BackingField: {fileID: 6060882277315488858}
   cameraTarget: {fileID: 2280637525510121760}
+  strictSpeedCap: 100
   <GroundedSuperState>k__BackingField:
     <IdleState>k__BackingField:
       decceleration: 20
@@ -56,12 +57,13 @@ MonoBehaviour:
       speed: 3
       decceleration: 5
     <SprintState>k__BackingField:
-      targetSpeed: 6
+      targetSpeed: 30
       acceleration: 5
+      sprintParticleSystem: {fileID: 0}
     <CrouchState>k__BackingField:
       <Speed>k__BackingField: 1.5
       decceleration: 5
-      controllerHeight: 1
+      controllerHeight: 1.2
       enterCameraShiftDuration: 0.25
       enterCameraShiftEaseType: 21
       exitCameraShiftDuration: 0.25
@@ -70,8 +72,7 @@ MonoBehaviour:
       <StartSlideSpeedThreshold>k__BackingField: 2.5
       enterSpeedMultiplier: 2
       friction: 2
-      controllerHeight: 0.75
-      crouchSpeedThreshold: 0.01
+      controllerHeight: 1
       enterCameraShiftDuration: 0.25
       enterCameraShiftEaseType: 21
       exitCameraShiftDuration: 0.25
@@ -81,8 +82,13 @@ MonoBehaviour:
     groundLayerMask:
       serializedVersion: 2
       m_Bits: 8
+    groundedYVelocity: -5
     jumpHeight: 1.5
-    <IsGrounded>k__BackingField: 0
+    coyoteTime: 2
+  <AirborneSuperState>k__BackingField:
+    <MoveState>k__BackingField:
+      acceleration: 20
+    regroundTimeThreshold: 0.1
 --- !u!143 &6060882277315488858
 CharacterController:
   m_ObjectHideFlags: 0
@@ -106,7 +112,7 @@ CharacterController:
   m_SlopeLimit: 45
   m_StepOffset: 0.3
   m_SkinWidth: 0.08
-  m_MinMoveDistance: 0.001
+  m_MinMoveDistance: 0
   m_Center: {x: 0, y: 1, z: 0}
 --- !u!1 &3254116009935609076
 GameObject:
