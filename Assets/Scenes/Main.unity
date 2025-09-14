@@ -699,22 +699,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: CinemachineCamera
       objectReference: {fileID: 0}
-    - target: {fileID: 5828764866914589725, guid: e775fd3391cf5504c9b1a65c3511b684, type: 3}
-      propertyPath: playOnAwake
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5828764866914589725, guid: e775fd3391cf5504c9b1a65c3511b684, type: 3}
-      propertyPath: ShapeModule.radius.value
-      value: 2.0594485
-      objectReference: {fileID: 0}
-    - target: {fileID: 5828764866914589725, guid: e775fd3391cf5504c9b1a65c3511b684, type: 3}
-      propertyPath: EmissionModule.rateOverTime.scalar
-      value: 205.9
-      objectReference: {fileID: 0}
-    - target: {fileID: 6164032478012250250, guid: e775fd3391cf5504c9b1a65c3511b684, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 6958144986109230231, guid: e775fd3391cf5504c9b1a65c3511b684, type: 3}
       propertyPath: Target.TrackingTarget
       value: 
@@ -759,15 +743,22 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 9129965117582224262, guid: e775fd3391cf5504c9b1a65c3511b684, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0.766
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e775fd3391cf5504c9b1a65c3511b684, type: 3}
+--- !u!114 &5334606154398358500 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2774546339443180356, guid: e775fd3391cf5504c9b1a65c3511b684, type: 3}
+  m_PrefabInstance: {fileID: 5334606154398358499}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 421d2cdfa5d470246b892001f5445d4e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &5371690083641556124
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -881,6 +872,10 @@ PrefabInstance:
       propertyPath: <GroundedSuperState>k__BackingField.<SprintState>k__BackingField.sprintParticleSystem
       value: 
       objectReference: {fileID: 1916340242}
+    - target: {fileID: 6316639454391115150, guid: ba4d0746fceda0f419e2fc5757ede4e8, type: 3}
+      propertyPath: fovChanger
+      value: 
+      objectReference: {fileID: 5334606154398358500}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

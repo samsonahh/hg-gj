@@ -1,3 +1,4 @@
+using System;
 using DG.Tweening;
 using NaughtyAttributes;
 using UnityEngine;
@@ -11,9 +12,9 @@ public class PlayerController : MonoBehaviour
     [field: SerializeField] public CharacterController Controller { get; private set; }
     [SerializeField] private Transform cameraTarget;
 
-    [Header("Config")] 
-    [SerializeField] private float strictSpeedCap = 100f;
-    
+    [field: Header("Config")]
+    [field: SerializeField] public float StrictSpeedCap { get; private set; }  = 100f;
+
     private StateMachine<PlayerController> stateMachine;
     [field: Header("States")]
     [field: SerializeField] public GroundedSuperState GroundedSuperState { get; private set; } = new();
@@ -71,7 +72,7 @@ public class PlayerController : MonoBehaviour
         stateMachine.Update();
         
         // Strict cap
-        SetPlanarVelocity(Vector3.ClampMagnitude(PlanarVelocity, strictSpeedCap));
+        SetPlanarVelocity(Vector3.ClampMagnitude(PlanarVelocity, StrictSpeedCap));
     }
 
     private void FixedUpdate()
