@@ -172,6 +172,7 @@ MonoBehaviour:
     m_Bits: 4294967295
   targetRefreshInterval: 0.75
   idleTimeRange: {x: 1.25, y: 2.75}
+  wanderWhenIdle: 0
   walkPointRange: 10
   reachedPointDistance: 1.15
   pathSampleInterval: 0.25

@@ -27,6 +27,7 @@ public class EnemyAI : MonoBehaviour
 
     [Header("Idle Settings")]
     [SerializeField] private Vector2 idleTimeRange = new(1.25f, 2.75f);
+    [SerializeField] private bool wanderWhenIdle = true; // Toggle: when false, enemy stays stationary in Idle
 
     [Header("Patrol")]
     [SerializeField] private float walkPointRange = 10f;
@@ -222,7 +223,7 @@ public class EnemyAI : MonoBehaviour
         if (_playerInAttack && _currentAmmo > 0) { ChangeState(EnemyState.Shoot); return; }
         if (_playerInAttack && _currentAmmo <= 0) { BeginReload(); return; }
         if (_playerInSight && !_playerInAttack) { ChangeState(EnemyState.Walk); return; }
-        if (_idleTimer <= 0f) { ChangeState(EnemyState.Walk); }
+        if (_idleTimer <= 0f && wanderWhenIdle) { ChangeState(EnemyState.Walk); }
     }
 
     private void UpdateWalk()
@@ -235,6 +236,14 @@ public class EnemyAI : MonoBehaviour
         if (_playerInSight && !_playerInAttack)
         {
             MoveToTarget();
+            return;
+        }
+
+        // If we lost sight and wandering is disabled, go back to Idle (stay stationary).
+        if (!wanderWhenIdle)
+        {
+            ResetIdleTimer();
+            ChangeState(EnemyState.Idle);
             return;
         }
 
@@ -420,7 +429,7 @@ public class EnemyAI : MonoBehaviour
     public int MagazineSize => magazineSize;
     public Transform CurrentTarget => _target;
 
-    private void OnDrawGizmos()
+    private void OnDrawGizmosSelected()
     {
         if (!showGizmos)
             return;
