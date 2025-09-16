@@ -12,26 +12,38 @@ public class Shotgun : MonoBehaviour
     [SerializeField] private int damagePerProjectile = 10;
     [SerializeField] private int maxAmmo = 8;
     [SerializeField] private int currentAmmo = 8;
+    [SerializeField] private bool infiniteAmmo = false;
 
     public int CurrentAmmo => currentAmmo;
     public int MaxAmmo => maxAmmo;
+    public bool InfiniteAmmo
+    {
+        get => infiniteAmmo;
+        set
+        {
+            if (infiniteAmmo != value)
+            {
+                infiniteAmmo = value;
+                OnAmmoChanged?.Invoke(currentAmmo, maxAmmo);
+            }
+        }
+    }
     public event Action<int, int> OnAmmoChanged = delegate { };
 
     [Header("Debug Config")]
     [SerializeField] private bool showGizmo = true;
 
     [Header("Camera Config")]
-    [SerializeField] private Camera playerCamera; // Assign in inspector or at runtime
+    [SerializeField] private Camera playerCamera;
     [SerializeField] private float maxRange = 100f;
 
     [Header("Flip Config")]
     [SerializeField] private float defaultFlipAngle = 360f;
-    [SerializeField] private float trickDuration = 1.0f; // All tricks use this duration
+    [SerializeField] private float trickDuration = 1.0f;
 
     private bool canFire = true;
     private Quaternion originalRotation;
 
-    // Struct to hold trick data
     private struct Trick
     {
         public Vector3 rotation;
@@ -60,17 +72,23 @@ public class Shotgun : MonoBehaviour
 
     public void Fire()
     {
-        if (!canFire || currentAmmo <= 0)
+        if (!canFire || (!infiniteAmmo && currentAmmo <= 0))
             return;
 
         canFire = false;
-        currentAmmo--;
-        OnAmmoChanged.Invoke(currentAmmo, maxAmmo);
+        if (!infiniteAmmo)
+        {
+            currentAmmo--;
+            OnAmmoChanged.Invoke(currentAmmo, maxAmmo);
+        }
+        else
+        {
+            OnAmmoChanged.Invoke(currentAmmo, maxAmmo);
+        }
 
         Vector3 shootDirection = GetShootDirection();
         FireProjectile(shootDirection, 0f);
 
-        // Library for tricks (all use the same duration)
         Trick[] tricks = new Trick[]
         {
             new Trick(new Vector3(-360f, 0f, 0f)),
@@ -96,7 +114,6 @@ public class Shotgun : MonoBehaviour
         .SetEase(Ease.OutCubic)
         .OnComplete(() =>
         {
-            // Smoothly rotate back to original rotation after the trick
             transform.DOLocalRotateQuaternion(originalRotation, 0.3f)
                 .SetEase(Ease.InOutCubic)
                 .OnComplete(() => canFire = true);
@@ -112,7 +129,6 @@ public class Shotgun : MonoBehaviour
         }
         else
         {
-            // If nothing is hit, shoot straight forward from the camera
             return ray.direction;
         }
     }
@@ -140,11 +156,9 @@ public class Shotgun : MonoBehaviour
         Vector3 forward = firePoint.forward;
         float length = 1.5f;
 
-        // Draw center line
         Gizmos.color = Color.green;
         Gizmos.DrawLine(firePoint.position, firePoint.position + forward * length);
 
-        // Draw spread lines
         Gizmos.color = Color.red;
         Quaternion leftRot = Quaternion.Euler(0, -spreadAngle / 2f, 0);
         Quaternion rightRot = Quaternion.Euler(0, spreadAngle / 2f, 0);
@@ -161,4 +175,11 @@ public class Shotgun : MonoBehaviour
         currentAmmo = maxAmmo;
         OnAmmoChanged.Invoke(currentAmmo, maxAmmo);
     }
+
+#if UNITY_EDITOR
+    private void OnValidate()
+    {
+        OnAmmoChanged?.Invoke(currentAmmo, maxAmmo);
+    }
+#endif
 }

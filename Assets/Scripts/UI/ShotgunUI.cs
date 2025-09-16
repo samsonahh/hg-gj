@@ -10,7 +10,6 @@ public class ShotgunUI : MonoBehaviour
 
     private void OnEnable()
     {
-        // Delay subscription until end of frame to ensure Shotgun is spawned
         StartCoroutine(SubscribeWhenReady());
     }
 
@@ -22,7 +21,6 @@ public class ShotgunUI : MonoBehaviour
 
     private System.Collections.IEnumerator SubscribeWhenReady()
     {
-        // Wait until end of frame to ensure Bootstrap/Shotgun is loaded
         yield return new WaitForEndOfFrame();
 
         shotgun = GetComponentInParent<Shotgun>();
@@ -38,7 +36,15 @@ public class ShotgunUI : MonoBehaviour
 
     private void UpdateAmmoUI(int current, int max)
     {
-        if (ammoText != null)
-            ammoText.text = $"Ammo: {current} / {max}";
+        if (shotgun != null && shotgun.InfiniteAmmo)
+        {
+            if (ammoText != null)
+                ammoText.text = $"Ammo: \u221E";
+        }
+        else
+        {
+            if (ammoText != null)
+                ammoText.text = $"Ammo: {current} / {max}";
+        }
     }
 }

@@ -20302,6 +20302,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 0}
     - target: {fileID: 3207639923118452839, guid: a3c4435ee71cb294898ea26fd18ad5ee, type: 3}
+      propertyPath: infiniteAmmo
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3207639923118452839, guid: a3c4435ee71cb294898ea26fd18ad5ee, type: 3}
       propertyPath: playerCamera
       value: 
       objectReference: {fileID: 1560499416}
