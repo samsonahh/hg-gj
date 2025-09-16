@@ -12,11 +12,11 @@ public enum EnemyState
 [RequireComponent(typeof(NavMeshAgent))]
 public class EnemyAI : MonoBehaviour
 {
-    [Header("Navigation")]
+    [Header("Navigation"), Tooltip("Navigation agent and ground detection settings.")]
     [SerializeField] private NavMeshAgent agent;
     [SerializeField] private LayerMask groundLayer = ~0;
 
-    [Header("Targeting")]
+    [Header("Targeting"), Tooltip("How the enemy detects and tracks the player.")]
     [SerializeField] private LayerMask playerLayer;
     [SerializeField] private string playerTag = "Player";
     [SerializeField] private float sightRange = 18f;
@@ -25,16 +25,16 @@ public class EnemyAI : MonoBehaviour
     [SerializeField] private LayerMask obstacleMask = ~0;
     [SerializeField] private float targetRefreshInterval = 0.75f;
 
-    [Header("Idle Settings")]
+    [Header("Idle Settings"), Tooltip("Idle behavior and timing when not pursuing the player.")]
     [SerializeField] private Vector2 idleTimeRange = new(1.25f, 2.75f);
     [SerializeField] private bool wanderWhenIdle = true; // Toggle: when false, enemy stays stationary in Idle
 
-    [Header("Patrol")]
+    [Header("Patrol"), Tooltip("Random patrol movement settings.")]
     [SerializeField] private float walkPointRange = 10f;
     [SerializeField] private float reachedPointDistance = 1.15f;
     [SerializeField] private float pathSampleInterval = 0.25f;
 
-    [Header("Combat")]
+    [Header("Combat"), Tooltip("Projectile and shooting configuration.")]
     [SerializeField] private GameObject projectilePrefab;
     [SerializeField] private Transform firePoint;
     [SerializeField] private float timeBetweenShots = 0.75f;
@@ -42,14 +42,14 @@ public class EnemyAI : MonoBehaviour
     [SerializeField] private float projectileSpread = 2f;
     [SerializeField] private float muzzleVerticalOffset = 1.2f;
 
-    [Header("Reload")]
+    [Header("Reload"), Tooltip("Reload timing for ranged attacks.")]
     [SerializeField] private float reloadDuration = 2.0f;
 
-    [Header("Movement")]
+    [Header("Movement"), Tooltip("Movement speeds for chasing and patrolling.")]
     [SerializeField] private float chaseSpeed = 4f;
     [SerializeField] private float patrolSpeed = 2.2f;
 
-    [Header("Debug")]
+    [Header("Debug"), Tooltip("Debug visualization and gizmo colors.")]
     [SerializeField] private bool showGizmos = true;
     [SerializeField] private Color sightColor = Color.yellow;
     [SerializeField] private Color attackColor = Color.red;
