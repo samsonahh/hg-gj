@@ -30,6 +30,10 @@ Shader "Cammie/FullScreenCameraEffect"
         _GrainSpeed ("Grain Speed", Float) = 1.5
         _GrainLumaResponse ("Grain Luma Response", Float) = 1
         _GrainSeedJitter ("Grain Seed Jitter", Vector) = (17.3,91.7,0,0)
+
+        // Pixelation
+        _PixelateEnabled ("Enable Pixelation", Float) = 0
+        _PixelSize ("Pixel Size", Range(1, 32)) = 1
     }
 
     SubShader
@@ -48,6 +52,7 @@ Shader "Cammie/FullScreenCameraEffect"
             #pragma multi_compile __ OUTLINE_ENABLED
             #pragma multi_compile __ OUTLINE_SILHOUETTE
             #pragma multi_compile __ FILMGRAIN_ENABLED
+            #pragma multi_compile __ PIXELATE_ENABLED
 
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 
@@ -84,6 +89,10 @@ Shader "Cammie/FullScreenCameraEffect"
             float  _GrainSpeed;
             float  _GrainLumaResponse;
             float4 _GrainSeedJitter;
+
+            // Pixelation
+            float  _PixelateEnabled;
+            float  _PixelSize;
 
             struct Varyings {
                 float4 positionCS : SV_POSITION;
@@ -177,7 +186,22 @@ Shader "Cammie/FullScreenCameraEffect"
 
             float4 Frag(Varyings i) : SV_Target
             {
-                float3 col = SAMPLE_TEXTURE2D(_CameraColorTexture, sampler_CameraColorTexture, i.uv).rgb;
+                float3 col;
+
+            #ifdef PIXELATE_ENABLED
+                if (_PixelateEnabled > 0.5 && _PixelSize > 1.0)
+                {
+                    float2 pixelCount = _ScreenParams.xy / _PixelSize;
+                    float2 pixelUV = (floor(i.uv * pixelCount) + 0.5) / pixelCount;
+                    col = SAMPLE_TEXTURE2D(_CameraColorTexture, sampler_CameraColorTexture, pixelUV).rgb;
+                }
+                else
+                {
+                    col = SAMPLE_TEXTURE2D(_CameraColorTexture, sampler_CameraColorTexture, i.uv).rgb;
+                }
+            #else
+                col = SAMPLE_TEXTURE2D(_CameraColorTexture, sampler_CameraColorTexture, i.uv).rgb;
+            #endif
 
                 // Posterize
                 col = Posterize(col, _PosterizeSteps);

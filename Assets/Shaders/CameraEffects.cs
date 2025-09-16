@@ -57,6 +57,10 @@ public class CameraEffects : MonoBehaviour
     [Tooltip("Seed offset for per-camera variation.")]
     [SerializeField] private Vector2 grainSeedJitter = new(37.2f, 91.7f);
 
+    [Header("Pixelation")]
+    [SerializeField] private bool pixelateOn = false;
+    [Range(1, 64)][SerializeField] private int pixelSize = 8;
+
     private Material runtimeMaterial;
 
     private static readonly Dictionary<Camera, CameraEffects> registry = new();
@@ -114,6 +118,14 @@ public class CameraEffects : MonoBehaviour
         m.SetFloat("_GrainSpeed", grainSpeed);
         m.SetFloat("_GrainLumaResponse", grainLuminanceResponse);
         m.SetVector("_GrainSeedJitter", grainSeedJitter);
+
+        // Pixelation
+        m.SetFloat("_PixelateEnabled", pixelateOn ? 1f : 0f);
+        m.SetFloat("_PixelSize", pixelSize);
+        if (pixelateOn)
+            m.EnableKeyword("PIXELATE_ENABLED");
+        else
+            m.DisableKeyword("PIXELATE_ENABLED");
 
         // Keywords
         SetKeyword(m, "VIGNETTE_ENABLED", enableVignette && vignetteIntensity > 0.001f);
