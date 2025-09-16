@@ -14951,8 +14951,8 @@ MonoBehaviour:
   grainSpeed: 1.5
   grainLuminanceResponse: 1
   grainSeedJitter: {x: 37.2, y: 91.7}
-  pixelateOn: 0
-  pixelSize: 7
+  pixelateOn: 1
+  pixelSize: 3
 --- !u!114 &1560499415
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -20259,11 +20259,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3081302648171837803, guid: a3c4435ee71cb294898ea26fd18ad5ee, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.219
+      value: -0.031
       objectReference: {fileID: 0}
     - target: {fileID: 3081302648171837803, guid: a3c4435ee71cb294898ea26fd18ad5ee, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.16400003
+      value: -0.223
       objectReference: {fileID: 0}
     - target: {fileID: 3081302648171837803, guid: a3c4435ee71cb294898ea26fd18ad5ee, type: 3}
       propertyPath: m_LocalPosition.z
