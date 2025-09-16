@@ -171,4 +171,16 @@ public class CameraEffects : MonoBehaviour
         grainLuminanceResponse = Mathf.Clamp(grainLuminanceResponse, 0f, 2f);
     }
 #endif
+
+    // Public API to control vignette at runtime
+    public float GetVignetteIntensity() => vignetteIntensity;
+
+    public void SetVignetteIntensity(float value, bool autoEnable = true)
+    {
+        vignetteIntensity = Mathf.Max(0f, value);
+        if (autoEnable)
+            enableVignette = vignetteIntensity > 0.001f;
+    }
+
+    public void SetVignetteEnabled(bool enabled) => enableVignette = enabled;
 }

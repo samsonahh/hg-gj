@@ -16,6 +16,7 @@ public class Health : MonoBehaviour
 
     public event Action<int, int> OnHealthChanged = delegate { };
     public event Action OnDied = delegate { };
+    public event Action<int, int> OnHealed = delegate { }; // NEW: fired when health increases
 
     private void Awake()
     {
@@ -45,8 +46,13 @@ public class Health : MonoBehaviour
         if (amount <= 0 || currentHealth <= 0)
             return;
 
+        int before = currentHealth;
         currentHealth = Mathf.Min(currentHealth + amount, maxHealth);
-        OnHealthChanged.Invoke(currentHealth, maxHealth);
+        if (currentHealth != before)
+        {
+            OnHealthChanged.Invoke(currentHealth, maxHealth);
+            OnHealed.Invoke(currentHealth, maxHealth); // notify heals explicitly
+        }
     }
 
     /// <summary>
@@ -56,6 +62,7 @@ public class Health : MonoBehaviour
     {
         currentHealth = maxHealth;
         OnHealthChanged.Invoke(currentHealth, maxHealth);
+        OnHealed.Invoke(currentHealth, maxHealth);
     }
 
     /// <summary>
@@ -76,9 +83,25 @@ public class Health : MonoBehaviour
         OnDied.Invoke();
         Destroy(gameObject);
     }
-    public void AddHealth(int amount)
+
+    /// <summary>
+    /// Adds health and notifies listeners. Returns true if health increased.
+    /// Use this when pickups add health so UI/effects can react.
+    /// </summary>
+    public bool AddHealth(int amount)
     {
+        if (amount <= 0 || currentHealth <= 0)
+            return false;
+
+        int before = currentHealth;
         currentHealth = Mathf.Clamp(currentHealth + amount, 0, maxHealth);
-        // add some UI feedback here
+
+        if (currentHealth != before)
+        {
+            OnHealthChanged.Invoke(currentHealth, maxHealth);
+            OnHealed.Invoke(currentHealth, maxHealth); // explicit heal event
+        }
+
+        return currentHealth > before;
     }
 }

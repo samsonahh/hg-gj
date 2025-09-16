@@ -63,6 +63,8 @@ Material:
     m_Ints: []
     m_Floats:
     - _Alpha: 0.9
+    - _Billboard: 1
+    - _BillboardYOnly: 0
     - _BumpScale: 1
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1

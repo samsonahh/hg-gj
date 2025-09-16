@@ -4,7 +4,7 @@ public class Projectile : MonoBehaviour
 {
     [SerializeField] private float speed = 20f; // Transform speed
     [SerializeField] private float decayTime = 3f; // Decay time in seconds
-    private int damage = 10;
+    [SerializeField] private int damage = 10;
 
     public void SetDamage(int value) => damage = value;
 
