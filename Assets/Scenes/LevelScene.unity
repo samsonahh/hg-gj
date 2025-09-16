@@ -18024,7 +18024,7 @@ MonoBehaviour:
   intensityAtFullHealth: 0
   intensityAtZeroHealth: 1.6
   pulseOnDamage: 1
-  pulseOvershoot: 0.15
+  pulseOvershoot: 15.45
   pulseUpDuration: 0.12
   pulseDownDuration: 0.25
   healFadeDuration: 0.2

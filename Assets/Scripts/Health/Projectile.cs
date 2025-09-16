@@ -36,4 +36,22 @@ public class Projectile : MonoBehaviour
 
         Destroy(gameObject);
     }
+    private void OnTriggerEnter(Collider other)
+    {
+        // Try Health component
+        Health health = other.gameObject.GetComponent<Health>();
+        if (health != null)
+        {
+            health.TakeDamage(damage);
+        }
+
+        // Try HealthEntity component
+        HealthEntity healthEntity = other.gameObject.GetComponent<HealthEntity>();
+        if (healthEntity != null)
+        {
+            healthEntity.TakeDamage(damage);
+        }
+
+        Destroy(gameObject);
+    }
 }
