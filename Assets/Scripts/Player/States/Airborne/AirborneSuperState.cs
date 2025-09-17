@@ -53,6 +53,9 @@ namespace PlayerStates
         {
             if (context.IsGrounded && Timer > regroundTimeThreshold)
                 return context.GroundedSuperState;
+            
+            if(context.WallRunState.IsWallRunning())
+                return context.WallRunState;
 
             return null;
         }

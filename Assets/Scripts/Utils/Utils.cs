@@ -68,4 +68,14 @@ public static class Utils
 
         return (forward * moveInput.y + right * moveInput.x).normalized;
     }
+
+    public static float GetJumpForce(float height) => Mathf.Sqrt(2 * height * Mathf.Abs(Physics.gravity.y));
+    
+    /// <summary>
+    /// Checks to see if a layermask contains a layer
+    /// </summary>
+    public static bool Contains(this LayerMask mask, int layer)
+    {
+        return (mask.value & (1 << layer)) != 0;
+    }
 }

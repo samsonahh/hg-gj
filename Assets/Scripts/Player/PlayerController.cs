@@ -26,7 +26,9 @@ public class PlayerController : MonoBehaviour
     [ShowNativeProperty] public Vector3 Velocity => velocity;
     public Vector3 PlanarVelocity => velocity.WithY(0f);
     [ShowNativeProperty] private float currentSpeed => PlanarVelocity.magnitude;
-    
+
+    public Action OnDrawGizmosActions = delegate { };
+
     private void Awake()
     {
         Input = InputManager.Instance;
@@ -48,6 +50,8 @@ public class PlayerController : MonoBehaviour
     private void OnDestroy()
     {
         stateMachine.Destroy();
+
+        OnDrawGizmosActions = null;
     }
 
     private void OnDrawGizmos()
@@ -63,6 +67,8 @@ public class PlayerController : MonoBehaviour
             Gizmos.color = Color.blue;
             Gizmos.DrawWireSphere(cameraTarget.position, 0.1f);
         }
+        
+        OnDrawGizmosActions?.Invoke();
     }
 
     private void Update()
@@ -73,6 +79,8 @@ public class PlayerController : MonoBehaviour
         
         // Strict cap
         SetPlanarVelocity(Vector3.ClampMagnitude(PlanarVelocity, StrictSpeedCap));
+        
+        transform.rotation = Quaternion.Euler(0f, CameraManager.Instance.CurrentCamera.transform.eulerAngles.y, 0f); ;
     }
 
     private void FixedUpdate()
@@ -86,9 +94,9 @@ public class PlayerController : MonoBehaviour
     
     public void ApplyPlanarVelocity() => Controller.Move(Time.deltaTime * velocity.WithY(0));
 
-    public void ApplyGravity()
+    public void ApplyGravity(bool decreaseVelocity = true)
     {
-        if(!IsGrounded)
+        if(decreaseVelocity)
             velocity += Time.deltaTime * Physics.gravity;
         
         Controller.Move(velocity.y * Time.deltaTime * Vector3.up);

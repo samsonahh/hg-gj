@@ -2875,7 +2875,7 @@ GameObject:
   - component: {fileID: 559504445}
   - component: {fileID: 559504444}
   - component: {fileID: 559504443}
-  m_Layer: 7
+  m_Layer: 10
   m_Name: Cube (24)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2918,7 +2918,7 @@ MeshCollider:
   serializedVersion: 5
   m_Convex: 0
   m_CookingOptions: 30
-  m_Mesh: {fileID: 1124214461}
+  m_Mesh: {fileID: 1125023392}
 --- !u!33 &559504444
 MeshFilter:
   m_ObjectHideFlags: 10
@@ -6496,7 +6496,7 @@ MeshCollider:
   serializedVersion: 5
   m_Convex: 0
   m_CookingOptions: 30
-  m_Mesh: {fileID: 1115759850}
+  m_Mesh: {fileID: 26265070}
 --- !u!33 &1061152639
 MeshFilter:
   m_ObjectHideFlags: 10
@@ -10152,7 +10152,7 @@ GameObject:
   - component: {fileID: 1400190711}
   - component: {fileID: 1400190710}
   - component: {fileID: 1400190709}
-  m_Layer: 7
+  m_Layer: 10
   m_Name: Cube (22)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10195,7 +10195,7 @@ MeshCollider:
   serializedVersion: 5
   m_Convex: 0
   m_CookingOptions: 30
-  m_Mesh: {fileID: 26265070}
+  m_Mesh: {fileID: 950410570}
 --- !u!33 &1400190710
 MeshFilter:
   m_ObjectHideFlags: 10
@@ -16274,7 +16274,7 @@ MeshCollider:
   serializedVersion: 5
   m_Convex: 0
   m_CookingOptions: 30
-  m_Mesh: {fileID: 1125023392}
+  m_Mesh: {fileID: 1623551020}
 --- !u!33 &1451661307
 MeshFilter:
   m_ObjectHideFlags: 10
@@ -20814,7 +20814,7 @@ MeshCollider:
   serializedVersion: 5
   m_Convex: 0
   m_CookingOptions: 30
-  m_Mesh: {fileID: 950410570}
+  m_Mesh: {fileID: 1124214461}
 --- !u!33 &1934211846
 MeshFilter:
   m_ObjectHideFlags: 10
@@ -23102,8 +23102,24 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6012633994290963282, guid: ba4d0746fceda0f419e2fc5757ede4e8, type: 3}
+      propertyPath: <WallRunState>k__BackingField.climbSpeed
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6012633994290963282, guid: ba4d0746fceda0f419e2fc5757ede4e8, type: 3}
+      propertyPath: <WallRunState>k__BackingField.minimumSpeed
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 6012633994290963282, guid: ba4d0746fceda0f419e2fc5757ede4e8, type: 3}
       propertyPath: <GroundedSuperState>k__BackingField.coyoteTime
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6012633994290963282, guid: ba4d0746fceda0f419e2fc5757ede4e8, type: 3}
+      propertyPath: <WallRunState>k__BackingField.wallCheckDistance
+      value: 0.75
+      objectReference: {fileID: 0}
+    - target: {fileID: 6012633994290963282, guid: ba4d0746fceda0f419e2fc5757ede4e8, type: 3}
+      propertyPath: <WallRunState>k__BackingField.wallLayerMask.m_Bits
+      value: 1024
       objectReference: {fileID: 0}
     - target: {fileID: 6012633994290963282, guid: ba4d0746fceda0f419e2fc5757ede4e8, type: 3}
       propertyPath: <GroundedSuperState>k__BackingField.groundLayerMask.m_Bits

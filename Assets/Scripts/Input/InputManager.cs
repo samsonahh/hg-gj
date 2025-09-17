@@ -18,13 +18,14 @@ public class InputManager : Singleton<InputManager>, IPlayerActions, IUIActions
     private protected override void Awake()
     {
         base.Awake();
+        CreateInputActions();
     }
 
     /// <summary>
     /// Creates a new InputActions instance and sets the callbacks for Player and UI actions.
     /// Needs to be done once in an entire game session.
     /// </summary>
-    private void CreatePlayerActions()
+    private void CreateInputActions()
     {
         InputActions = new PlayerInputActions();
         InputActions.Player.SetCallbacks(this);
@@ -37,7 +38,7 @@ public class InputManager : Singleton<InputManager>, IPlayerActions, IUIActions
     public void DisableAllActions()
     {
         if (InputActions == null)
-            CreatePlayerActions();
+            CreateInputActions();
 
         InputActions.Disable();
     }
@@ -49,7 +50,7 @@ public class InputManager : Singleton<InputManager>, IPlayerActions, IUIActions
     public void EnablePlayerActions()
     {
         if (InputActions == null)
-            CreatePlayerActions();
+            CreateInputActions();
 
         InputActions.Enable();
         InputActions.Player.Enable();
@@ -65,7 +66,7 @@ public class InputManager : Singleton<InputManager>, IPlayerActions, IUIActions
     public void EnableUIActions()
     {
         if (InputActions == null)
-            CreatePlayerActions();
+            CreateInputActions();
 
         InputActions.Enable();
         InputActions.Player.Disable();
