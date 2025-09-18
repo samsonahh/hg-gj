@@ -1,6 +1,13 @@
 using UnityEngine;
 using UnityEngine.AI;
 
+public enum EnemyState
+{
+    Idle,
+    Walk,
+    Shoot,
+    Reload
+}
 public abstract class EnemyAIBase : MonoBehaviour
 {
     [Header("Navigation"), Tooltip("Navigation agent and ground detection settings.")]
@@ -274,7 +281,7 @@ public abstract class EnemyAIBase : MonoBehaviour
             var projObj = Instantiate(projectilePrefab, firePoint.position, Quaternion.LookRotation(dir, Vector3.up));
             var proj = projObj.GetComponent<Projectile>();
             if (proj != null)
-                proj.SetDamage(projectileDamage); // Set projectile damage
+                proj.SetDamage(projectileDamage);
 
             _currentAmmo--;
             _shotCooldown = timeBetweenShots;
@@ -424,3 +431,4 @@ public abstract class EnemyAIBase : MonoBehaviour
     public int MagazineSize => magazineSize;
     public Transform CurrentTarget => _target;
 }
+
