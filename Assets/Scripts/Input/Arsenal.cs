@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,16 +9,24 @@ public class Arsenal : MonoBehaviour
 
     private int currentWeaponIndex = 0;
 
+    public int CurrentWeaponIndex => currentWeaponIndex;
+    public int WeaponCount => weapons.Count;
+
+    public event Action<int> OnWeaponChanged = delegate { };
+
     private void OnEnable()
     {
-        if (InputManager.Instance != null)
-            InputManager.Instance.Scroll += OnScroll;
+        // Subscribe to PlayerWeaponController's event if present
+        var controller = GetComponent<PlayerWeaponController>();
+        if (controller != null)
+            controller.OnWeaponSwitchRequested += SwitchWeapon;
     }
 
     private void OnDisable()
     {
-        if (InputManager.Instance != null)
-            InputManager.Instance.Scroll -= OnScroll;
+        var controller = GetComponent<PlayerWeaponController>();
+        if (controller != null)
+            controller.OnWeaponSwitchRequested -= SwitchWeapon;
     }
 
     private void Start()
@@ -26,21 +35,20 @@ public class Arsenal : MonoBehaviour
     }
 
     /// <summary>
-    /// Handles scroll input to swap weapons.
+    /// Switches weapon by index delta (e.g. +1 or -1).
     /// </summary>
-    private void OnScroll(Vector2 scrollDelta)
+    public void SwitchWeapon(int delta)
     {
-        if (weapons.Count == 0)
+        if (weapons.Count == 0 || delta == 0)
             return;
 
-        if (scrollDelta.y > 0)
-            currentWeaponIndex = (currentWeaponIndex + 1) % weapons.Count;
-        else if (scrollDelta.y < 0)
-            currentWeaponIndex = (currentWeaponIndex - 1 + weapons.Count) % weapons.Count;
-        else
-            return;
-
-        ActivateWeapon(currentWeaponIndex);
+        int newIndex = (currentWeaponIndex + delta + weapons.Count) % weapons.Count;
+        if (newIndex != currentWeaponIndex)
+        {
+            currentWeaponIndex = newIndex;
+            ActivateWeapon(currentWeaponIndex);
+            OnWeaponChanged.Invoke(currentWeaponIndex);
+        }
     }
 
     /// <summary>
