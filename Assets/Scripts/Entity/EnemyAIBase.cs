@@ -37,9 +37,8 @@ public abstract class EnemyAIBase : MonoBehaviour
     [SerializeField] protected Transform firePoint;
     [SerializeField] protected float timeBetweenShots = 0.75f;
     [SerializeField] protected int magazineSize = 5;
-    [SerializeField] protected float projectileSpread = 2f;
     [SerializeField] protected float muzzleVerticalOffset = 1.2f;
-    [SerializeField] protected int projectileDamage = 10; // New: control projectile damage
+    [SerializeField] protected int projectileDamage = 10;
 
     [Header("Reload"), Tooltip("Reload timing for ranged attacks.")]
     [SerializeField] protected float reloadDuration = 2.0f;
@@ -273,11 +272,6 @@ public abstract class EnemyAIBase : MonoBehaviour
             Vector3 aimPos = _target.position + Vector3.up * muzzleVerticalOffset;
             Vector3 dir = (aimPos - firePoint.position).normalized;
 
-            dir = Quaternion.Euler(
-                Random.Range(-projectileSpread, projectileSpread),
-                Random.Range(-projectileSpread, projectileSpread),
-                0f) * dir;
-
             var projObj = Instantiate(projectilePrefab, firePoint.position, Quaternion.LookRotation(dir, Vector3.up));
             var proj = projObj.GetComponent<Projectile>();
             if (proj != null)
@@ -326,10 +320,8 @@ public abstract class EnemyAIBase : MonoBehaviour
             _pathSampleTimer = 0f;
         }
 
-        // --- Fix: If agent is stuck or can't reach the walk point, reset walk point and go idle ---
         if (agent.pathPending == false)
         {
-            // If agent can't reach the point or is stuck
             if (agent.pathStatus == NavMeshPathStatus.PathPartial ||
                 agent.pathStatus == NavMeshPathStatus.PathInvalid ||
                 (agent.remainingDistance > 0.1f && agent.velocity.sqrMagnitude < 0.01f))
@@ -431,4 +423,3 @@ public abstract class EnemyAIBase : MonoBehaviour
     public int MagazineSize => magazineSize;
     public Transform CurrentTarget => _target;
 }
-

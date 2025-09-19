@@ -180,8 +180,8 @@ MonoBehaviour:
   firePoint: {fileID: 2562692945666714298}
   timeBetweenShots: 0.75
   magazineSize: 5
-  projectileSpread: 2
   muzzleVerticalOffset: 1.2
+  projectileDamage: 10
   reloadDuration: 2
   chaseSpeed: 4
   patrolSpeed: 2.2
@@ -190,6 +190,7 @@ MonoBehaviour:
   attackColor: {r: 1, g: 0, b: 0, a: 1}
   walkPointColor: {r: 0, g: 1, b: 1, a: 1}
   targetColor: {r: 1, g: 0, b: 1, a: 1}
+  projectileSpread: 2
 --- !u!114 &4651672490032532360
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -875,7 +876,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: c2cb2787ac7acdc47afeede69c855817, type: 2}
+  - {fileID: 2100000, guid: b92000d9e1e45f641847b89eb658d842, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

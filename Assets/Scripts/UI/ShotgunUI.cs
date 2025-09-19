@@ -1,7 +1,7 @@
 using TMPro;
 using UnityEngine;
 
-public class ShotgunUI : MonoBehaviour
+public class ShotgunUI : UIPanel
 {
     [Header("References")]
     [SerializeField] private TextMeshProUGUI ammoText;
@@ -10,6 +10,9 @@ public class ShotgunUI : MonoBehaviour
 
     private void OnEnable()
     {
+        // Subscribe to UIManager events
+        UIManager.Instance.OnPanelChanged += HandleShowPanel;
+        UIManager.Instance.OnUIClose += HandleHideAllPanels;
         StartCoroutine(SubscribeWhenReady());
     }
 
@@ -17,6 +20,12 @@ public class ShotgunUI : MonoBehaviour
     {
         if (shotgun != null)
             shotgun.OnAmmoChanged -= UpdateAmmoUI;
+
+        if (UIManager.Instance != null)
+        {
+            UIManager.Instance.OnPanelChanged -= HandleShowPanel;
+            UIManager.Instance.OnUIClose -= HandleHideAllPanels;
+        }
     }
 
     private System.Collections.IEnumerator SubscribeWhenReady()
@@ -46,5 +55,41 @@ public class ShotgunUI : MonoBehaviour
             if (ammoText != null)
                 ammoText.text = $"Ammo: {current} / {max}";
         }
+    }
+
+    /// <summary>
+    /// Hides the ammo text UI element.
+    /// </summary>
+    public void HideAmmoText()
+    {
+        if (ammoText != null)
+            ammoText.gameObject.SetActive(false);
+    }
+
+    /// <summary>
+    /// Shows the ammo text UI element.
+    /// </summary>
+    public void ShowAmmoText()
+    {
+        if (ammoText != null)
+            ammoText.gameObject.SetActive(true);
+    }
+
+    private void HandleShowPanel(UIPanel panel)
+    {
+        // Hide ammo text when any panel is shown
+        HideAmmoText();
+    }
+
+    private void HandleHideAllPanels()
+    {
+        // Show ammo text when all panels are hidden
+        ShowAmmoText();
+    }
+
+    // Implementation of abstract Init() from UIPanel
+    private protected override void Init()
+    {
+        
     }
 }
