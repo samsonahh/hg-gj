@@ -533,8 +533,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mainScene:
-    asset: {fileID: 102900000, guid: 99c9720ab356a0642a771bea13969a05, type: 3}
-    guid: 99c9720ab356a0642a771bea13969a05
+    asset: {fileID: 102900000, guid: 2ad2849d204a47e41a6921fe38308b76, type: 3}
+    guid: 2ad2849d204a47e41a6921fe38308b76
 --- !u!223 &2455443507864692798
 Canvas:
   m_ObjectHideFlags: 0
