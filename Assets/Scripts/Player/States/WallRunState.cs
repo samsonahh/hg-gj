@@ -9,7 +9,6 @@ namespace PlayerStates
     public class WallRunState : State<PlayerController>
     {
         [SerializeField] private float minimumSpeed = 5f;
-        [SerializeField] private float climbSpeed = 10f;
         [SerializeField] private float jumpOffHeight = 1.5f;
         
         [SerializeField] private float wallCheckDistance = 0.5f;
@@ -54,7 +53,7 @@ namespace PlayerStates
             
             Vector3 wallUp = Vector3.ProjectOnPlane(Vector3.up, wallNormal).normalized;
             
-            context.SetVelocity(enterVelocity + climbSpeed * context.Input.MoveDirection.y * wallUp);
+            // context.SetVelocity(enterVelocity);
             
             context.ApplyPlanarVelocity();
             context.ApplyGravity(false);
@@ -82,7 +81,10 @@ namespace PlayerStates
         private void Input_Jump()
         {
             float jumpForce = Utils.GetJumpForce(jumpOffHeight);
-            context.SetVelocity(jumpForce * (wallNormal + Vector3.up));
+            Vector3 moveDirection =
+                Utils.GetCameraBasedMoveInput(CameraManager.Instance.CurrentCamera.transform, context.Input.MoveDirection);
+            moveDirection = moveDirection == Vector3.zero ? context.transform.forward.WithY(0).normalized : moveDirection;
+            context.SetVelocity(jumpForce * (moveDirection + Vector3.up));
             
             stateMachine.ChangeState(context.AirborneSuperState);
         }
@@ -98,7 +100,7 @@ namespace PlayerStates
             if (context.PlanarVelocity.magnitude < minimumSpeed)
                 return false;
 
-            return isTouchingRightWall ||isTouchingLeftWall;
+            return isTouchingRightWall || isTouchingLeftWall;
         }
     }
 }
