@@ -2918,7 +2918,7 @@ MeshCollider:
   serializedVersion: 5
   m_Convex: 0
   m_CookingOptions: 30
-  m_Mesh: {fileID: 1124214461}
+  m_Mesh: {fileID: 1125023392}
 --- !u!33 &559504444
 MeshFilter:
   m_ObjectHideFlags: 10
@@ -6496,7 +6496,7 @@ MeshCollider:
   serializedVersion: 5
   m_Convex: 0
   m_CookingOptions: 30
-  m_Mesh: {fileID: 1115759850}
+  m_Mesh: {fileID: 26265070}
 --- !u!33 &1061152639
 MeshFilter:
   m_ObjectHideFlags: 10
@@ -10195,7 +10195,7 @@ MeshCollider:
   serializedVersion: 5
   m_Convex: 0
   m_CookingOptions: 30
-  m_Mesh: {fileID: 26265070}
+  m_Mesh: {fileID: 950410570}
 --- !u!33 &1400190710
 MeshFilter:
   m_ObjectHideFlags: 10
@@ -16274,7 +16274,7 @@ MeshCollider:
   serializedVersion: 5
   m_Convex: 0
   m_CookingOptions: 30
-  m_Mesh: {fileID: 1125023392}
+  m_Mesh: {fileID: 1623551020}
 --- !u!33 &1451661307
 MeshFilter:
   m_ObjectHideFlags: 10
@@ -20330,6 +20330,18 @@ MonoBehaviour:
   pulseUpDuration: 0.12
   pulseDownDuration: 0.25
   healFadeDuration: 0.2
+--- !u!114 &1846619727
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1846619719}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2106b9c5eb5aa2748b3077383006ed27, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1859432236
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -20814,7 +20826,7 @@ MeshCollider:
   serializedVersion: 5
   m_Convex: 0
   m_CookingOptions: 30
-  m_Mesh: {fileID: 950410570}
+  m_Mesh: {fileID: 1124214461}
 --- !u!33 &1934211846
 MeshFilter:
   m_ObjectHideFlags: 10
@@ -22968,6 +22980,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1560499416}
     - target: {fileID: 3207639923118452839, guid: a3c4435ee71cb294898ea26fd18ad5ee, type: 3}
+      propertyPath: trickDuration
+      value: 0.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 3207639923118452839, guid: a3c4435ee71cb294898ea26fd18ad5ee, type: 3}
       propertyPath: ignoreCameraRoll
       value: 1
       objectReference: {fileID: 0}
@@ -23142,6 +23158,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 247951192802344219, guid: ba4d0746fceda0f419e2fc5757ede4e8, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1846619726}
+    - targetCorrespondingSourceObject: {fileID: 247951192802344219, guid: ba4d0746fceda0f419e2fc5757ede4e8, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1846619727}
   m_SourcePrefab: {fileID: 100100000, guid: ba4d0746fceda0f419e2fc5757ede4e8, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

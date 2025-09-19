@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEngine.AI;
 
-// Credits to "Dave / GameDevelopment" (https://www.youtube.com/watch?v=UjkSFoLxesw)
 public enum EnemyState
 {
     Idle,
@@ -9,83 +8,72 @@ public enum EnemyState
     Shoot,
     Reload
 }
-[RequireComponent(typeof(NavMeshAgent))]
-public class EnemyAI : MonoBehaviour
+public abstract class EnemyAIBase : MonoBehaviour
 {
     [Header("Navigation"), Tooltip("Navigation agent and ground detection settings.")]
-    [SerializeField] private NavMeshAgent agent;
-    [SerializeField] private LayerMask groundLayer = ~0;
+    [SerializeField] protected NavMeshAgent agent;
+    [SerializeField] protected LayerMask groundLayer = ~0;
 
     [Header("Targeting"), Tooltip("How the enemy detects and tracks the player.")]
-    [SerializeField] private LayerMask playerLayer;
-    [SerializeField] private string playerTag = "Player";
-    [SerializeField] private float sightRange = 18f;
-    [SerializeField] private float attackRange = 10f;
-    [SerializeField] private bool requireLineOfSight = true;
-    [SerializeField] private LayerMask obstacleMask = ~0;
-    [SerializeField] private float targetRefreshInterval = 0.75f;
+    [SerializeField] protected LayerMask playerLayer;
+    [SerializeField] protected string playerTag = "Player";
+    [SerializeField] protected float sightRange = 18f;
+    [SerializeField] protected float attackRange = 10f;
+    [SerializeField] protected bool requireLineOfSight = true;
+    [SerializeField] protected LayerMask obstacleMask = ~0;
+    [SerializeField] protected float targetRefreshInterval = 0.75f;
 
     [Header("Idle Settings"), Tooltip("Idle behavior and timing when not pursuing the player.")]
-    [SerializeField] private Vector2 idleTimeRange = new(1.25f, 2.75f);
-    [SerializeField] private bool wanderWhenIdle = true; // Toggle: when false, enemy stays stationary in Idle
+    [SerializeField] protected Vector2 idleTimeRange = new(1.25f, 2.75f);
+    [SerializeField] protected bool wanderWhenIdle = true;
 
     [Header("Patrol"), Tooltip("Random patrol movement settings.")]
-    [SerializeField] private float walkPointRange = 10f;
-    [SerializeField] private float reachedPointDistance = 1.15f;
-    [SerializeField] private float pathSampleInterval = 0.25f;
+    [SerializeField] protected float walkPointRange = 10f;
+    [SerializeField] protected float reachedPointDistance = 1.15f;
+    [SerializeField] protected float pathSampleInterval = 0.25f;
 
     [Header("Combat"), Tooltip("Projectile and shooting configuration.")]
-    [SerializeField] private GameObject projectilePrefab;
-    [SerializeField] private Transform firePoint;
-    [SerializeField] private float timeBetweenShots = 0.75f;
-    [SerializeField] private int magazineSize = 5;
-    [SerializeField] private float projectileSpread = 2f;
-    [SerializeField] private float muzzleVerticalOffset = 1.2f;
+    [SerializeField] protected GameObject projectilePrefab;
+    [SerializeField] protected Transform firePoint;
+    [SerializeField] protected float timeBetweenShots = 0.75f;
+    [SerializeField] protected int magazineSize = 5;
+    [SerializeField] protected float projectileSpread = 2f;
+    [SerializeField] protected float muzzleVerticalOffset = 1.2f;
+    [SerializeField] protected int projectileDamage = 10; // New: control projectile damage
 
     [Header("Reload"), Tooltip("Reload timing for ranged attacks.")]
-    [SerializeField] private float reloadDuration = 2.0f;
+    [SerializeField] protected float reloadDuration = 2.0f;
 
     [Header("Movement"), Tooltip("Movement speeds for chasing and patrolling.")]
-    [SerializeField] private float chaseSpeed = 4f;
-    [SerializeField] private float patrolSpeed = 2.2f;
+    [SerializeField] protected float chaseSpeed = 4f;
+    [SerializeField] protected float patrolSpeed = 2.2f;
 
     [Header("Debug"), Tooltip("Debug visualization and gizmo colors.")]
-    [SerializeField] private bool showGizmos = true;
-    [SerializeField] private Color sightColor = Color.yellow;
-    [SerializeField] private Color attackColor = Color.red;
-    [SerializeField] private Color walkPointColor = Color.cyan;
-    [SerializeField] private Color targetColor = Color.magenta;
+    [SerializeField] protected bool showGizmos = true;
+    [SerializeField] protected Color sightColor = Color.yellow;
+    [SerializeField] protected Color attackColor = Color.red;
+    [SerializeField] protected Color walkPointColor = Color.cyan;
+    [SerializeField] protected Color targetColor = Color.magenta;
 
-    // State
-    private EnemyState _state = EnemyState.Idle;
+    protected EnemyState _state = EnemyState.Idle;
+    protected float _targetRefreshTimer;
+    protected Transform _target;
+    protected bool _playerInSight;
+    protected bool _playerInAttack;
+    protected float _idleTimer;
+    protected float _shotCooldown;
+    protected float _reloadTimer;
+    protected int _currentAmmo;
+    protected Vector3 _walkPoint;
+    protected bool _hasWalkPoint;
+    protected float _pathSampleTimer;
+    protected const float GROUND_CHECK_DISTANCE = 2f;
+    protected float _sightRangeSqr;
+    protected float _attackRangeSqr;
+    protected float _reachedPointDistanceSqr;
+    protected readonly Collider[] _targetHits = new Collider[16];
 
-    // Targeting
-    private float _targetRefreshTimer;
-    private Transform _target;
-    private bool _playerInSight;
-    private bool _playerInAttack;
-
-    // Timers/Ammo
-    private float _idleTimer;
-    private float _shotCooldown;
-    private float _reloadTimer;
-    private int _currentAmmo;
-
-    // Patrol
-    private Vector3 _walkPoint;
-    private bool _hasWalkPoint;
-    private float _pathSampleTimer;
-
-    // Constants / caches
-    private const float GROUND_CHECK_DISTANCE = 2f;
-    private float _sightRangeSqr;
-    private float _attackRangeSqr;
-    private float _reachedPointDistanceSqr;
-
-    // Non-alloc target search
-    private readonly Collider[] _targetHits = new Collider[16];
-
-    private void Awake()
+    protected virtual void Awake()
     {
         agent ??= GetComponent<NavMeshAgent>();
         _currentAmmo = Mathf.Max(0, magazineSize);
@@ -99,7 +87,7 @@ public class EnemyAI : MonoBehaviour
         _pathSampleTimer = 0f;
     }
 
-    private void Update()
+    protected virtual void Update()
     {
         if (agent == null)
             return;
@@ -110,7 +98,7 @@ public class EnemyAI : MonoBehaviour
         StateLoop();
     }
 
-    private void RefreshTargetIfNeeded()
+    protected virtual void RefreshTargetIfNeeded()
     {
         _targetRefreshTimer -= Time.deltaTime;
 
@@ -124,12 +112,11 @@ public class EnemyAI : MonoBehaviour
         AcquireTarget();
     }
 
-    private void AcquireTarget()
+    protected virtual void AcquireTarget()
     {
         Transform best = null;
         float bestDistSqr = float.MaxValue;
 
-        // Primary: physics overlap (non-alloc) if a player layer mask is provided
         if (playerLayer.value != 0)
         {
             int count = Physics.OverlapSphereNonAlloc(transform.position, sightRange, _targetHits, playerLayer, QueryTriggerInteraction.Ignore);
@@ -147,7 +134,6 @@ public class EnemyAI : MonoBehaviour
             }
         }
 
-        // Fallback: tag search if no layer result
         if (best == null && !string.IsNullOrEmpty(playerTag))
         {
             var tagged = GameObject.FindGameObjectsWithTag(playerTag);
@@ -166,7 +152,7 @@ public class EnemyAI : MonoBehaviour
         _target = best;
     }
 
-    private void SenseTarget()
+    protected virtual void SenseTarget()
     {
         if (_target == null)
         {
@@ -196,7 +182,7 @@ public class EnemyAI : MonoBehaviour
         _playerInAttack = inAttackRadius && hasLOS;
     }
 
-    private void UpdateTimers()
+    protected virtual void UpdateTimers()
     {
         if (_shotCooldown > 0f) _shotCooldown = Mathf.Max(0f, _shotCooldown - Time.deltaTime);
         if (_reloadTimer > 0f) _reloadTimer = Mathf.Max(0f, _reloadTimer - Time.deltaTime);
@@ -205,7 +191,7 @@ public class EnemyAI : MonoBehaviour
         _pathSampleTimer += Time.deltaTime;
     }
 
-    private void StateLoop()
+    protected virtual void StateLoop()
     {
         switch (_state)
         {
@@ -216,7 +202,7 @@ public class EnemyAI : MonoBehaviour
         }
     }
 
-    private void UpdateIdle()
+    protected virtual void UpdateIdle()
     {
         agent.ResetPath();
 
@@ -226,7 +212,7 @@ public class EnemyAI : MonoBehaviour
         if (_idleTimer <= 0f && wanderWhenIdle) { ChangeState(EnemyState.Walk); }
     }
 
-    private void UpdateWalk()
+    protected virtual void UpdateWalk()
     {
         agent.speed = _playerInSight ? chaseSpeed : patrolSpeed;
 
@@ -239,7 +225,6 @@ public class EnemyAI : MonoBehaviour
             return;
         }
 
-        // If we lost sight and wandering is disabled, go back to Idle (stay stationary).
         if (!wanderWhenIdle)
         {
             ResetIdleTimer();
@@ -250,7 +235,7 @@ public class EnemyAI : MonoBehaviour
         Patrol();
     }
 
-    private void UpdateShoot()
+    protected virtual void UpdateShoot()
     {
         agent.ResetPath();
         FaceTarget();
@@ -262,7 +247,7 @@ public class EnemyAI : MonoBehaviour
         TryShoot();
     }
 
-    private void UpdateReload()
+    protected virtual void UpdateReload()
     {
         agent.ResetPath();
 
@@ -278,7 +263,7 @@ public class EnemyAI : MonoBehaviour
         ChangeState(EnemyState.Idle);
     }
 
-    private void TryShoot()
+    protected virtual void TryShoot()
     {
         if (_shotCooldown > 0f)
             return;
@@ -293,17 +278,20 @@ public class EnemyAI : MonoBehaviour
                 Random.Range(-projectileSpread, projectileSpread),
                 0f) * dir;
 
-            Instantiate(projectilePrefab, firePoint.position, Quaternion.LookRotation(dir, Vector3.up));
+            var projObj = Instantiate(projectilePrefab, firePoint.position, Quaternion.LookRotation(dir, Vector3.up));
+            var proj = projObj.GetComponent<Projectile>();
+            if (proj != null)
+                proj.SetDamage(projectileDamage);
+
             _currentAmmo--;
             _shotCooldown = timeBetweenShots;
             return;
         }
 
-        // If we can't shoot (missing refs), still set cooldown to avoid spamming logic
         _shotCooldown = timeBetweenShots;
     }
 
-    private void BeginReload()
+    protected virtual void BeginReload()
     {
         if (_state == EnemyState.Reload)
             return;
@@ -312,17 +300,17 @@ public class EnemyAI : MonoBehaviour
         ChangeState(EnemyState.Reload);
     }
 
-    private void FinishReload()
+    protected virtual void FinishReload()
     {
         _currentAmmo = magazineSize;
     }
 
-    private void ResetIdleTimer()
+    protected virtual void ResetIdleTimer()
     {
         _idleTimer = Random.Range(idleTimeRange.x, idleTimeRange.y);
     }
 
-    private void Patrol()
+    protected virtual void Patrol()
     {
         if (!_hasWalkPoint)
         {
@@ -338,6 +326,21 @@ public class EnemyAI : MonoBehaviour
             _pathSampleTimer = 0f;
         }
 
+        // --- Fix: If agent is stuck or can't reach the walk point, reset walk point and go idle ---
+        if (agent.pathPending == false)
+        {
+            // If agent can't reach the point or is stuck
+            if (agent.pathStatus == NavMeshPathStatus.PathPartial ||
+                agent.pathStatus == NavMeshPathStatus.PathInvalid ||
+                (agent.remainingDistance > 0.1f && agent.velocity.sqrMagnitude < 0.01f))
+            {
+                _hasWalkPoint = false;
+                ResetIdleTimer();
+                ChangeState(EnemyState.Idle);
+                return;
+            }
+        }
+
         if ((transform.position - _walkPoint).sqrMagnitude <= _reachedPointDistanceSqr)
         {
             _hasWalkPoint = false;
@@ -346,7 +349,7 @@ public class EnemyAI : MonoBehaviour
         }
     }
 
-    private void MoveToTarget()
+    protected virtual void MoveToTarget()
     {
         if (_target == null)
             return;
@@ -358,7 +361,7 @@ public class EnemyAI : MonoBehaviour
         _pathSampleTimer = 0f;
     }
 
-    private bool TryGetRandomWalkPoint(out Vector3 result)
+    protected virtual bool TryGetRandomWalkPoint(out Vector3 result)
     {
         for (int i = 0; i < 12; i++)
         {
@@ -366,7 +369,6 @@ public class EnemyAI : MonoBehaviour
             float randX = Random.Range(-walkPointRange, walkPointRange);
             Vector3 candidate = new(transform.position.x + randX, transform.position.y, transform.position.z + randZ);
 
-            // Grounded and on NavMesh
             if (!Physics.Raycast(candidate + Vector3.up * 2f, Vector3.down, out RaycastHit hit, GROUND_CHECK_DISTANCE + 2f, groundLayer))
                 continue;
 
@@ -381,7 +383,7 @@ public class EnemyAI : MonoBehaviour
         return false;
     }
 
-    private void FaceTarget()
+    protected virtual void FaceTarget()
     {
         if (_target == null)
             return;
@@ -396,7 +398,7 @@ public class EnemyAI : MonoBehaviour
         transform.rotation = Quaternion.Slerp(transform.rotation, targetRot, Time.deltaTime * 10f);
     }
 
-    private void ChangeState(EnemyState newState)
+    protected virtual void ChangeState(EnemyState newState)
     {
         if (_state == newState)
             return;
@@ -412,7 +414,7 @@ public class EnemyAI : MonoBehaviour
                 break;
 
             case EnemyState.Walk:
-                _hasWalkPoint = false; // reacquire as needed
+                _hasWalkPoint = false;
                 break;
         }
     }
@@ -428,35 +430,5 @@ public class EnemyAI : MonoBehaviour
     public int CurrentAmmo => _currentAmmo;
     public int MagazineSize => magazineSize;
     public Transform CurrentTarget => _target;
-
-    private void OnDrawGizmosSelected()
-    {
-        if (!showGizmos)
-            return;
-
-        Gizmos.color = sightColor;
-        Gizmos.DrawWireSphere(transform.position, sightRange);
-
-        Gizmos.color = attackColor;
-        Gizmos.DrawWireSphere(transform.position, attackRange);
-
-        if (_hasWalkPoint)
-        {
-            Gizmos.color = walkPointColor;
-            Gizmos.DrawSphere(_walkPoint, 0.25f);
-            Gizmos.DrawLine(transform.position, _walkPoint);
-        }
-
-        if (_target != null)
-        {
-            Gizmos.color = targetColor;
-            Gizmos.DrawLine(transform.position + Vector3.up * 1.2f, _target.position + Vector3.up * 1.2f);
-        }
-
-        if (firePoint != null)
-        {
-            Gizmos.color = Color.magenta;
-            Gizmos.DrawLine(firePoint.position, firePoint.position + firePoint.forward * 2f);
-        }
-    }
 }
+
