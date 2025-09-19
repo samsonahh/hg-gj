@@ -6,7 +6,7 @@ public class Fists : MonoBehaviour
     [Header("References")]
     [SerializeField] private Transform leftFistMesh;
     [SerializeField] private Transform rightFistMesh;
-    [SerializeField] private Camera playerCamera; // Assign the main camera in the inspector or at runtime
+    [SerializeField] private Camera playerCamera;
 
     [Header("Animation")]
     [SerializeField] private float squishAmount = 0.7f;
@@ -16,16 +16,16 @@ public class Fists : MonoBehaviour
     [SerializeField] private Ease restoreEase = Ease.InOutQuad;
 
     [Header("Punch Motion")]
-    [SerializeField] private float punchDistance = 0.4f; // How far the fist moves toward the camera center
+    [SerializeField] private float punchDistance = 0.4f;
     [SerializeField] private float punchDuration = 0.12f;
     [SerializeField] private Ease punchEase = Ease.OutCubic;
 
     [Header("Damage")]
     [SerializeField] private int fistDamage = 10;
-    [SerializeField] private float damageCooldown = 0.15f; // Prevents multiple hits per punch
+    [SerializeField] private float damageCooldown = 0.15f;
 
     [Header("Projectile Layer")]
-    [SerializeField] private LayerMask projectileLayer; // Assign the Projectile layer in the inspector
+    [SerializeField] private LayerMask projectileLayer;
 
     private Vector3 leftFistOriginalScale;
     private Vector3 rightFistOriginalScale;
@@ -167,10 +167,8 @@ public class Fists : MonoBehaviour
     private void ResetLeftFistDamage() => leftFistCanDamage = false;
     private void ResetRightFistDamage() => rightFistCanDamage = false;
 
-    // Called by FistHitbox
     public void TryDealDamage(Collider other, bool isLeft)
     {
-        // Destroy projectile if in projectile layer
         if (((1 << other.gameObject.layer) & projectileLayer.value) != 0)
         {
             Destroy(other.gameObject);
