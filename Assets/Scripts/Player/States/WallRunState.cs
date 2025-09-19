@@ -10,6 +10,7 @@ namespace PlayerStates
     {
         [SerializeField] private float minimumSpeed = 5f;
         [SerializeField] private float jumpOffHeight = 1.5f;
+        [SerializeField] private float wallControlAcceleration = 10f;
         
         [SerializeField] private float wallCheckDistance = 0.5f;
         [SerializeField] private float wallCheckYOffset = 0f;
@@ -47,13 +48,11 @@ namespace PlayerStates
 
         private protected override void OnUpdate()
         {
-            /*Vector3 wallForward = Vector3.Cross(wallNormal, Vector3.up);
+            Vector3 wallForward = Vector3.Cross(wallNormal, Vector3.up);
             if((context.transform.forward - wallForward).magnitude > (context.transform.forward + wallForward).magnitude) // Wall forward is based on player forward
-                wallForward = -wallForward;*/
+                wallForward = -wallForward;
             
-            Vector3 wallUp = Vector3.ProjectOnPlane(Vector3.up, wallNormal).normalized;
-            
-            // context.SetVelocity(enterVelocity);
+            context.SetVelocity(context.Velocity + context.Input.MoveDirection.y * wallControlAcceleration * Time.deltaTime * wallForward);
             
             context.ApplyPlanarVelocity();
             context.ApplyGravity(false);
@@ -84,7 +83,7 @@ namespace PlayerStates
             Vector3 moveDirection =
                 Utils.GetCameraBasedMoveInput(CameraManager.Instance.CurrentCamera.transform, context.Input.MoveDirection);
             moveDirection = moveDirection == Vector3.zero ? context.transform.forward.WithY(0).normalized : moveDirection;
-            context.SetVelocity(jumpForce * (moveDirection + Vector3.up));
+            context.SetVelocity(jumpForce * (moveDirection + Vector3.up).normalized);
             
             stateMachine.ChangeState(context.AirborneSuperState);
         }
