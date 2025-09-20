@@ -167,8 +167,6 @@ public class CameraEffects : MonoBehaviour
 
         // Unsubscribe from scene loaded event
         SceneManager.sceneLoaded -= OnSceneLoaded;
-
-        DisableCameraEffects();
     }
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
@@ -191,14 +189,6 @@ public class CameraEffects : MonoBehaviour
     private void EnableCameraEffects()
     {
         enabled = true;
-    }
-
-    /// <summary>
-    /// Ensures camera effects are disabled (for example, by disabling this component or related scripts).
-    /// </summary>
-    private void DisableCameraEffects()
-    {
-        enabled = false;
     }
 
 #if UNITY_EDITOR
