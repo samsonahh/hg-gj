@@ -4170,7 +4170,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   normalColor: {r: 1, g: 1, b: 1, a: 1}
   enemyColor: {r: 1, g: 0, b: 0, a: 1}
-  rayDistance: 100
+  rayDistance: 16
   enemyLayer:
     serializedVersion: 2
     m_Bits: 256
