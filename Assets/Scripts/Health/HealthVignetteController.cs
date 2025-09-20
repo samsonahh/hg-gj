@@ -54,6 +54,10 @@ public class HealthVignetteController : MonoBehaviour
             health.OnHealthChanged += OnHealthChanged; // for damage pulse detection
             health.OnHealed += OnHealed; // for heal fade
         }
+
+        // Ensure vignette is enabled when this controller is enabled
+        if (cameraEffects != null && ensureEnabled)
+            cameraEffects.SetVignetteEnabled(true);
     }
 
     private void OnDisable()
@@ -65,6 +69,10 @@ public class HealthVignetteController : MonoBehaviour
         }
 
         _tween?.Kill(false);
+
+        // Ensure vignette is disabled when this controller is disabled
+        if (cameraEffects != null && ensureEnabled)
+            cameraEffects.SetVignetteEnabled(false);
     }
 
     // Damage path: only pulse on damage
