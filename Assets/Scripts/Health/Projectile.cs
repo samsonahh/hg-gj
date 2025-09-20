@@ -34,7 +34,7 @@ public class Projectile : MonoBehaviour
             healthEntity.TakeDamage(damage);
         }
 
-        Destroy(gameObject);
+       // Destroy(gameObject);
     }
     private void OnTriggerEnter(Collider other)
     {
@@ -52,6 +52,6 @@ public class Projectile : MonoBehaviour
             healthEntity.TakeDamage(damage);
         }
 
-        Destroy(gameObject);
+       // Destroy(gameObject);
     }
 }

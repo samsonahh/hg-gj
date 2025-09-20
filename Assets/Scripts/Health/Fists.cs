@@ -27,6 +27,11 @@ public class Fists : MonoBehaviour
     [Header("Projectile Layer")]
     [SerializeField] private LayerMask projectileLayer;
 
+    [Header("Parry")]
+    [SerializeField] private float parryWindow = 0.25f;
+    [SerializeField] private float parryCooldown = 1.0f; 
+    [SerializeField] private GameObject parryWindowObject;
+
     private Vector3 leftFistOriginalScale;
     private Vector3 rightFistOriginalScale;
     private Vector3 leftFistOriginalPos;
@@ -38,6 +43,9 @@ public class Fists : MonoBehaviour
 
     private bool leftFistCanDamage = false;
     private bool rightFistCanDamage = false;
+    private bool isParrying = false;
+    private bool punchLeftNext = true;
+    private float lastParryTime = -Mathf.Infinity;
 
     private void Awake()
     {
@@ -61,8 +69,8 @@ public class Fists : MonoBehaviour
     {
         if (InputManager.Instance != null)
         {
-            InputManager.Instance.LeftClick += PunchLeftFist;
-            InputManager.Instance.RightClick += PunchRightFist;
+            InputManager.Instance.LeftClick += PunchAlternateFist;
+            InputManager.Instance.RightClick += StartParry;
         }
     }
 
@@ -70,8 +78,8 @@ public class Fists : MonoBehaviour
     {
         if (InputManager.Instance != null)
         {
-            InputManager.Instance.LeftClick -= PunchLeftFist;
-            InputManager.Instance.RightClick -= PunchRightFist;
+            InputManager.Instance.LeftClick -= PunchAlternateFist;
+            InputManager.Instance.RightClick -= StartParry;
         }
     }
 
@@ -94,84 +102,99 @@ public class Fists : MonoBehaviour
         }
     }
 
-    private void PunchLeftFist()
+    private void PunchAlternateFist()
     {
-        if (leftFistMesh == null || playerCamera == null) return;
+        if (punchLeftNext)
+            PunchFist(leftFistMesh, ref leftFistTween, ref leftFistPunchTween, leftFistOriginalScale, leftFistOriginalPos, true);
+        else
+            PunchFist(rightFistMesh, ref rightFistTween, ref rightFistPunchTween, rightFistOriginalScale, rightFistOriginalPos, false);
 
-        leftFistTween?.Kill();
-        leftFistPunchTween?.Kill();
-        leftFistMesh.localScale = leftFistOriginalScale;
-        leftFistMesh.localPosition = leftFistOriginalPos;
-
-        // Squish
-        leftFistTween = leftFistMesh.DOScale(
-                new Vector3(leftFistOriginalScale.x * squishAmount, leftFistOriginalScale.y * (2 - squishAmount), leftFistOriginalScale.z * squishAmount),
-                squishDuration
-            )
-            .SetEase(squishEase)
-            .OnComplete(() =>
-                leftFistMesh.DOScale(leftFistOriginalScale, restoreDuration).SetEase(restoreEase)
-            );
-
-        // Move the left fist mesh toward the center of the camera
-        Vector3 worldTarget = playerCamera.ViewportToWorldPoint(new Vector3(0.5f, 0.5f, playerCamera.nearClipPlane + punchDistance));
-        Vector3 localTarget = leftFistMesh.parent != null
-            ? leftFistMesh.parent.InverseTransformPoint(worldTarget)
-            : worldTarget;
-
-        leftFistCanDamage = true;
-        leftFistPunchTween = leftFistMesh.DOLocalMove(localTarget, punchDuration)
-            .SetEase(punchEase)
-            .OnComplete(() =>
-            {
-                leftFistMesh.DOLocalMove(leftFistOriginalPos, restoreDuration).SetEase(restoreEase);
-                Invoke(nameof(ResetLeftFistDamage), damageCooldown);
-            });
+        punchLeftNext = !punchLeftNext;
     }
 
-    private void PunchRightFist()
+    private void PunchFist(Transform fistMesh, ref Tween scaleTween, ref Tween punchTween, Vector3 originalScale, Vector3 originalPos, bool isLeft)
     {
-        if (rightFistMesh == null || playerCamera == null) return;
+        if (fistMesh == null || playerCamera == null) return;
 
-        rightFistTween?.Kill();
-        rightFistPunchTween?.Kill();
-        rightFistMesh.localScale = rightFistOriginalScale;
-        rightFistMesh.localPosition = rightFistOriginalPos;
+        scaleTween?.Kill();
+        punchTween?.Kill();
+        fistMesh.localScale = originalScale;
+        fistMesh.localPosition = originalPos;
 
-        // Squish
-        rightFistTween = rightFistMesh.DOScale(
-                new Vector3(rightFistOriginalScale.x * squishAmount, rightFistOriginalScale.y * (2 - squishAmount), rightFistOriginalScale.z * squishAmount),
+        // Squish the fist mesh
+        scaleTween = fistMesh.DOScale(
+                new Vector3(originalScale.x * squishAmount, originalScale.y * (2 - squishAmount), originalScale.z * squishAmount),
                 squishDuration
             )
             .SetEase(squishEase)
             .OnComplete(() =>
-                rightFistMesh.DOScale(rightFistOriginalScale, restoreDuration).SetEase(restoreEase)
+                fistMesh.DOScale(originalScale, restoreDuration).SetEase(restoreEase)
             );
 
-        // Move the right fist mesh toward the center of the camera
+        // Move the fist mesh toward the center of the camera
         Vector3 worldTarget = playerCamera.ViewportToWorldPoint(new Vector3(0.5f, 0.5f, playerCamera.nearClipPlane + punchDistance));
-        Vector3 localTarget = rightFistMesh.parent != null
-            ? rightFistMesh.parent.InverseTransformPoint(worldTarget)
+        Vector3 localTarget = fistMesh.parent != null
+            ? fistMesh.parent.InverseTransformPoint(worldTarget)
             : worldTarget;
 
-        rightFistCanDamage = true;
-        rightFistPunchTween = rightFistMesh.DOLocalMove(localTarget, punchDuration)
+        if (isLeft) leftFistCanDamage = true;
+        else rightFistCanDamage = true;
+
+        punchTween = fistMesh.DOLocalMove(localTarget, punchDuration)
             .SetEase(punchEase)
             .OnComplete(() =>
             {
-                rightFistMesh.DOLocalMove(rightFistOriginalPos, restoreDuration).SetEase(restoreEase);
-                Invoke(nameof(ResetRightFistDamage), damageCooldown);
+                fistMesh.DOLocalMove(originalPos, restoreDuration).SetEase(restoreEase);
+                if (isLeft) Invoke(nameof(ResetLeftFistDamage), damageCooldown);
+                else Invoke(nameof(ResetRightFistDamage), damageCooldown);
             });
     }
 
     private void ResetLeftFistDamage() => leftFistCanDamage = false;
     private void ResetRightFistDamage() => rightFistCanDamage = false;
 
+    private void StartParry()
+    {
+        // Cooldown check
+        if (isParrying || Time.time < lastParryTime + parryCooldown)
+            return;
+
+        isParrying = true;
+        lastParryTime = Time.time;
+        if (parryWindowObject != null)
+            parryWindowObject.SetActive(true);
+        Invoke(nameof(EndParry), parryWindow);
+        // sound or vfx goes here
+    }
+
+    private void EndParry()
+    {
+        isParrying = false;
+        if (parryWindowObject != null)
+            parryWindowObject.SetActive(false);
+    }
+
     public void TryDealDamage(Collider other, bool isLeft)
     {
         if (((1 << other.gameObject.layer) & projectileLayer.value) != 0)
         {
-            Destroy(other.gameObject);
+            // Only deflect if parrying
+            if (isParrying)
+            {
+                Rigidbody rb = other.attachedRigidbody;
+                if (rb != null)
+                {
+                    Vector3[] directions = {
+                        -transform.right, // left
+                        transform.up,     // up
+                        transform.right   // right
+                    };
+                    Vector3 deflectDir = directions[Random.Range(0, directions.Length)].normalized;
+                    Vector3 force = (deflectDir + transform.forward * 0.5f).normalized * 15f;
+                    rb.linearVelocity = Vector3.zero;
+                    rb.AddForce(force, ForceMode.VelocityChange);
+                }
+            }
             return;
         }
 

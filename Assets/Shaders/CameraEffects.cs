@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 [ExecuteAlways]
 [DisallowMultipleComponent]
@@ -145,6 +146,9 @@ public class CameraEffects : MonoBehaviour
     {
         var cam = GetComponent<Camera>();
         registry[cam] = this;
+
+        // Subscribe to scene loaded event
+        SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
     private void OnDisable()
@@ -157,6 +161,21 @@ public class CameraEffects : MonoBehaviour
             if (Application.isPlaying) Destroy(runtimeMaterial);
             else DestroyImmediate(runtimeMaterial);
         }
+
+        // Unsubscribe from scene loaded event
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        // Re-register the camera in case the registry is cleared or objects are reloaded
+        var cam = GetComponent<Camera>();
+        if (!registry.ContainsKey(cam))
+            registry[cam] = this;
+
+        // Optionally, re-apply material settings if needed
+        if (Material != null)
+            ApplyToMaterial(Material);
     }
 
 #if UNITY_EDITOR
