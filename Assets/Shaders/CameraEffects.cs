@@ -149,6 +149,9 @@ public class CameraEffects : MonoBehaviour
 
         // Subscribe to scene loaded event
         SceneManager.sceneLoaded += OnSceneLoaded;
+
+        // Enable camera effects (if using a post-process or OnRenderImage, ensure it's active)
+        EnableCameraEffects();
     }
 
     private void OnDisable()
@@ -164,6 +167,8 @@ public class CameraEffects : MonoBehaviour
 
         // Unsubscribe from scene loaded event
         SceneManager.sceneLoaded -= OnSceneLoaded;
+
+        DisableCameraEffects();
     }
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
@@ -173,9 +178,27 @@ public class CameraEffects : MonoBehaviour
         if (!registry.ContainsKey(cam))
             registry[cam] = this;
 
-        // Optionally, re-apply material settings if needed
+
         if (Material != null)
             ApplyToMaterial(Material);
+
+        EnableCameraEffects();
+    }
+
+    /// <summary>
+    /// Ensures camera effects are enabled (for example, by enabling this component or related scripts).
+    /// </summary>
+    private void EnableCameraEffects()
+    {
+        enabled = true;
+    }
+
+    /// <summary>
+    /// Ensures camera effects are disabled (for example, by disabling this component or related scripts).
+    /// </summary>
+    private void DisableCameraEffects()
+    {
+        enabled = false;
     }
 
 #if UNITY_EDITOR
