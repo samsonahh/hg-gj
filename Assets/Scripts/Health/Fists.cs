@@ -24,12 +24,19 @@ public class Fists : MonoBehaviour
     [SerializeField] private int fistDamage = 10;
     [SerializeField] private float damageCooldown = 0.15f;
 
+    [Header("Hitstop")]
+    [Tooltip("Duration of hitstop in seconds.")]
+    [SerializeField] private float hitstopDuration = 0.06f;
+    [Tooltip("Time scale during hitstop. 0 = full stop, 0.1 = slow.")]
+    [Range(0f, 1f)]
+    [SerializeField] private float hitstopTimeScale = 0.0f;
+
     [Header("Projectile Layer")]
     [SerializeField] private LayerMask projectileLayer;
 
     [Header("Parry")]
     [SerializeField] private float parryWindow = 0.25f;
-    [SerializeField] private float parryCooldown = 1.0f; 
+    [SerializeField] private float parryCooldown = 1.0f;
     [SerializeField] private GameObject parryWindowObject;
 
     private Vector3 leftFistOriginalScale;
@@ -46,6 +53,7 @@ public class Fists : MonoBehaviour
     private bool isParrying = false;
     private bool punchLeftNext = true;
     private float lastParryTime = -Mathf.Infinity;
+    private bool isHitstopActive = false;
 
     private void Awake()
     {
@@ -207,7 +215,24 @@ public class Fists : MonoBehaviour
             health.TakeDamage(fistDamage);
             if (isLeft) leftFistCanDamage = false;
             else rightFistCanDamage = false;
+
+            // --- HITSTOP ---
+            if (!isHitstopActive && hitstopDuration > 0f)
+                StartCoroutine(HitstopCoroutine());
         }
+    }
+
+    private System.Collections.IEnumerator HitstopCoroutine()
+    {
+        isHitstopActive = true;
+        float originalTimeScale = Time.timeScale;
+        float originalFixedDeltaTime = Time.fixedDeltaTime;
+        Time.timeScale = hitstopTimeScale;
+        Time.fixedDeltaTime = 0.02f * Time.timeScale;
+        yield return new WaitForSecondsRealtime(hitstopDuration);
+        Time.timeScale = originalTimeScale;
+        Time.fixedDeltaTime = originalFixedDeltaTime;
+        isHitstopActive = false;
     }
 }
 

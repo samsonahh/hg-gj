@@ -4831,6 +4831,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 968520798}
     m_Modifications:
+    - target: {fileID: -3042838083177950988, guid: 90b4ed57a3c0b874e92ea5de641f881e, type: 3}
+      propertyPath: spawnPositions.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: -3042838083177950988, guid: 90b4ed57a3c0b874e92ea5de641f881e, type: 3}
+      propertyPath: spawnPositions.Array.data[2].x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -3042838083177950988, guid: 90b4ed57a3c0b874e92ea5de641f881e, type: 3}
+      propertyPath: spawnPositions.Array.data[2].y
+      value: 1.5
+      objectReference: {fileID: 0}
     - target: {fileID: 493387728225787371, guid: 90b4ed57a3c0b874e92ea5de641f881e, type: 3}
       propertyPath: m_LocalPosition.x
       value: -2.34
@@ -21417,7 +21429,7 @@ Transform:
   m_GameObject: {fileID: 2013997920}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.109, z: 0.397}
+  m_LocalPosition: {x: 0, y: -0.109, z: 0.699}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -21457,8 +21469,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1.51, y: 1.83, z: 1.0398046}
-  m_Center: {x: 0, y: 0, z: 0.10990232}
+  m_Size: {x: 1.51, y: 1.83, z: 1.3135148}
+  m_Center: {x: 0, y: 0, z: 0.24675745}
 --- !u!1 &2036500120
 GameObject:
   m_ObjectHideFlags: 0
@@ -23028,8 +23040,10 @@ MonoBehaviour:
   punchDistance: 4
   punchDuration: 0.12
   punchEase: 9
-  fistDamage: 50
+  fistDamage: 20
   damageCooldown: 0.15
+  hitstopDuration: 0.06
+  hitstopTimeScale: 0
   projectileLayer:
     serializedVersion: 2
     m_Bits: 512
