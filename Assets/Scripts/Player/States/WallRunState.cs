@@ -27,6 +27,9 @@ namespace PlayerStates
 
         private Vector3 enterVelocity;
 
+        private GameObject currentWall;
+        private GameObject previousWall;
+
         private protected override void OnInit()
         {
             context.OnDrawGizmosActions += OnDrawGizmos;
@@ -42,6 +45,8 @@ namespace PlayerStates
 
         private protected override void OnExit()
         {
+            previousWall = currentWall;
+            
             if (context.Input != null)
                 context.Input.Jump -= Input_Jump;
         }
@@ -90,8 +95,13 @@ namespace PlayerStates
 
         public bool IsWallRunning()
         {
+            if (previousWall != null && previousWall == currentWall)
+                return false;
+            
             isTouchingRightWall = Physics.Raycast(rightRay.origin, rightRay.direction, out rightHit, wallCheckDistance, wallLayerMask);
             isTouchingLeftWall = Physics.Raycast(leftRay.origin, leftRay.direction, out leftHit, wallCheckDistance, wallLayerMask);
+
+            currentWall = isTouchingRightWall ? rightHit.collider?.gameObject : leftHit.collider?.gameObject;
             
             if (!context.Input.InputActions.Player.Sprint.IsPressed())
                 return false;
@@ -100,6 +110,11 @@ namespace PlayerStates
                 return false;
 
             return isTouchingRightWall || isTouchingLeftWall;
+        }
+
+        public void ResetPreviousWall()
+        {
+            previousWall = null;
         }
     }
 }

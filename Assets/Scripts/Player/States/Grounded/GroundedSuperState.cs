@@ -43,6 +43,8 @@ namespace PlayerStates
             context.Input.Jump += Input_Jump;
             context.Input.Crouch += Input_Crouch;
             
+            context.WallRunState.ResetPreviousWall();
+            
             if (context.Input.InputActions.Player.Crouch.IsPressed())
             {
                 SubStateMachine.ChangeState(SlideState);
