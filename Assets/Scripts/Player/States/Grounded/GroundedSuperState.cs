@@ -18,7 +18,6 @@ namespace PlayerStates
         [field: Header("Config")]
         [field: SerializeField] public float GroundCheckDistance { get; private set; } = 1f;
         [field: SerializeField] public float GroundCheckRadius { get; private set; } = 1f;
-        [SerializeField] private LayerMask groundLayerMask;
         [SerializeField] private float groundedYVelocity = -5f;
         [SerializeField] private float jumpHeight = 1.5f;
         [SerializeField] private float coyoteTime = 0.5f;
@@ -85,7 +84,7 @@ namespace PlayerStates
         
         public void CheckGrounded()
         {
-            IsGrounded = Physics.CheckSphere(context.transform.position + GroundCheckDistance * Vector3.down, GroundCheckRadius, groundLayerMask);
+            IsGrounded = Physics.CheckSphere(context.transform.position + GroundCheckDistance * Vector3.down, GroundCheckRadius, context.GroundLayerMask);
         }
 
         private void Input_Jump()

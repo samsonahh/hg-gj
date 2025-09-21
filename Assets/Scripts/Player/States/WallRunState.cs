@@ -106,7 +106,7 @@ namespace PlayerStates
             if (!context.Input.InputActions.Player.Sprint.IsPressed())
                 return false;
             
-            if (context.PlanarVelocity.magnitude < minimumSpeed)
+            if (context.StateMachine.CurrentState != context.WallRunState && context.PlanarVelocity.magnitude < minimumSpeed)
                 return false;
 
             return isTouchingRightWall || isTouchingLeftWall;
