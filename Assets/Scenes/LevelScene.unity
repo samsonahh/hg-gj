@@ -23571,32 +23571,8 @@ PrefabInstance:
       value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 6012633994290963282, guid: ba4d0746fceda0f419e2fc5757ede4e8, type: 3}
-      propertyPath: <WallRunState>k__BackingField.minimumSpeed
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 6012633994290963282, guid: ba4d0746fceda0f419e2fc5757ede4e8, type: 3}
-      propertyPath: <GroundedSuperState>k__BackingField.coyoteTime
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 6012633994290963282, guid: ba4d0746fceda0f419e2fc5757ede4e8, type: 3}
-      propertyPath: <WallRunState>k__BackingField.wallCheckDistance
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6012633994290963282, guid: ba4d0746fceda0f419e2fc5757ede4e8, type: 3}
-      propertyPath: <WallRunState>k__BackingField.wallLayerMask.m_Bits
-      value: 1024
-      objectReference: {fileID: 0}
-    - target: {fileID: 6012633994290963282, guid: ba4d0746fceda0f419e2fc5757ede4e8, type: 3}
       propertyPath: <GroundedSuperState>k__BackingField.groundLayerMask.m_Bits
       value: 136
-      objectReference: {fileID: 0}
-    - target: {fileID: 6012633994290963282, guid: ba4d0746fceda0f419e2fc5757ede4e8, type: 3}
-      propertyPath: <GroundedSuperState>k__BackingField.<SprintState>k__BackingField.targetSpeed
-      value: 30
-      objectReference: {fileID: 0}
-    - target: {fileID: 6012633994290963282, guid: ba4d0746fceda0f419e2fc5757ede4e8, type: 3}
-      propertyPath: <GroundedSuperState>k__BackingField.<SlideState>k__BackingField.enterSpeedMultiplier
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6012633994290963282, guid: ba4d0746fceda0f419e2fc5757ede4e8, type: 3}
       propertyPath: <GroundedSuperState>k__BackingField.<SprintState>k__BackingField.sprintParticleSystem
