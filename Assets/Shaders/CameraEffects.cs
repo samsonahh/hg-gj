@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 [ExecuteAlways]
 [DisallowMultipleComponent]
@@ -145,6 +146,12 @@ public class CameraEffects : MonoBehaviour
     {
         var cam = GetComponent<Camera>();
         registry[cam] = this;
+
+        // Subscribe to scene loaded event
+        SceneManager.sceneLoaded += OnSceneLoaded;
+
+        // Enable camera effects (if using a post-process or OnRenderImage, ensure it's active)
+        EnableCameraEffects();
     }
 
     private void OnDisable()
@@ -157,6 +164,31 @@ public class CameraEffects : MonoBehaviour
             if (Application.isPlaying) Destroy(runtimeMaterial);
             else DestroyImmediate(runtimeMaterial);
         }
+
+        // Unsubscribe from scene loaded event
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        // Re-register the camera in case the registry is cleared or objects are reloaded
+        var cam = GetComponent<Camera>();
+        if (!registry.ContainsKey(cam))
+            registry[cam] = this;
+
+
+        if (Material != null)
+            ApplyToMaterial(Material);
+
+        EnableCameraEffects();
+    }
+
+    /// <summary>
+    /// Ensures camera effects are enabled (for example, by enabling this component or related scripts).
+    /// </summary>
+    private void EnableCameraEffects()
+    {
+        enabled = true;
     }
 
 #if UNITY_EDITOR

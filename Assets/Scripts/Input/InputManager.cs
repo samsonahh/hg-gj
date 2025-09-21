@@ -14,6 +14,8 @@ public class InputManager : Singleton<InputManager>, IPlayerActions, IUIActions
     public event Action<bool> Crouch = delegate { };
     public event Action Shoot = delegate { };
     public event Action<Vector2> Scroll = delegate { };
+    public event Action RightClick = delegate { };
+    public event Action LeftClick = delegate { }; // Added event for left click
 
     private protected override void Awake()
     {
@@ -148,7 +150,8 @@ public class InputManager : Singleton<InputManager>, IPlayerActions, IUIActions
     }
     public void OnClick(InputAction.CallbackContext context)
     {
-
+        if (context.performed)
+            LeftClick?.Invoke();
     }
     public void OnScrollWheel(InputAction.CallbackContext context)
     {
@@ -160,6 +163,7 @@ public class InputManager : Singleton<InputManager>, IPlayerActions, IUIActions
     }
     public void OnRightClick(InputAction.CallbackContext context)
     {
-
+        if (context.performed)
+            RightClick?.Invoke();
     }
 }

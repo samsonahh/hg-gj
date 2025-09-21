@@ -81,6 +81,7 @@ public class Health : MonoBehaviour
     private void Die()
     {
         OnDied.Invoke();
+        GameManager.Instance.ChangeState(GameState.Results);
         Destroy(gameObject);
     }
 

@@ -11,11 +11,15 @@ public class AmmoPickup : PickupBase
 
     protected override bool CanPickup(Collider other)
     {
-        return other.CompareTag("Player") && shotgun != null;
+        return other.CompareTag("Player");
     }
 
     protected override void OnPickup(Collider other)
     {
+        // Try to find the Shotgun in the scene, even if it was not found in Awake
+        if (shotgun == null || !shotgun.gameObject.activeInHierarchy)
+            shotgun = Object.FindFirstObjectByType<Shotgun>(UnityEngine.FindObjectsInactive.Include);
+
         if (shotgun != null)
         {
             shotgun.Reload();
