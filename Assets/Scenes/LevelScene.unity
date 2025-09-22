@@ -2232,7 +2232,7 @@ Light:
   serializedVersion: 11
   m_Type: 1
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 2
+  m_Intensity: 1
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -2295,7 +2295,7 @@ Transform:
   m_GameObject: {fileID: 410087039}
   serializedVersion: 2
   m_LocalRotation: {x: 0.40821788, y: -0.23456968, z: 0.10938163, w: 0.8754261}
-  m_LocalPosition: {x: 0, y: 3, z: 0}
+  m_LocalPosition: {x: -0.000000044703484, y: 3, z: 0.000000067055225}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -17294,48 +17294,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 1393795467774019477, guid: e775fd3391cf5504c9b1a65c3511b684, type: 3}
   m_PrefabInstance: {fileID: 5334606154398358499}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1560499413
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1560499406}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4b1102fbe8d05be43aed933f8e2e857c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  effectShader: {fileID: 4800000, guid: 7a344a80dd2c1dd429015c79d1da077e, type: 3}
-  materialOverride: {fileID: 0}
-  tint: {r: 1, g: 1, b: 1, a: 1}
-  tintIntensity: 0
-  posterizeSteps: 10
-  enableVignette: 1
-  vignetteInnerRadius: 0.3
-  vignetteOuterRadius: 0.75
-  vignetteSoftness: 1
-  vignetteIntensity: 0
-  vignetteColor: {r: 2, g: 0, b: 0, a: 1}
-  vignetteCenter: {x: 0.5, y: 0.5}
-  vignetteAxisScale: {x: 1, y: 1}
-  vignetteRoundness: 0
-  enableOutline: 0
-  silhouetteOnly: 0
-  outlineColor: {r: 0, g: 0, b: 0, a: 1}
-  outlineThickness: 1
-  depthThreshold: 0.003
-  outlineSoftness: 0.002
-  outlineStrength: 1
-  silhouetteBackgroundThreshold: 0.995
-  enableFilmGrain: 0
-  grainIntensity: 0.35
-  grainScale: 320
-  grainSpeed: 1.5
-  grainLuminanceResponse: 1
-  grainSeedJitter: {x: 37.2, y: 91.7}
-  pixelateOn: 1
-  pixelSize: 3
 --- !u!114 &1560499415
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -17389,7 +17347,7 @@ Camera:
   m_GameObject: {fileID: 1560499406}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 4
+  m_ClearFlags: 1
   m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
@@ -20571,15 +20529,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health: {fileID: 1846619721}
-  cameraEffects: {fileID: 1560499413}
-  ensureEnabled: 1
+  cameraEffectsVolume: {fileID: 832575518}
   intensityAtFullHealth: 0
-  intensityAtZeroHealth: 1.6
-  pulseOnDamage: 1
-  pulseOvershoot: 15.45
-  pulseUpDuration: 0.12
-  pulseDownDuration: 0.25
-  healFadeDuration: 0.2
+  intensityAtZeroHealth: 1.2
+  impulseStrength: 0.4
+  impulseDuration: 0.4
+  smoothTime: 0.15
+  healImpulseStrength: 0.4
+  healImpulseDuration: 0.4
+  healColor: {r: 0, g: 1, b: 0, a: 1}
+  damageColor: {r: 1, g: 0, b: 0, a: 1}
 --- !u!114 &1846619727
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -23173,9 +23132,6 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 4321517951611552171}
     m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 1393795467774019477, guid: e775fd3391cf5504c9b1a65c3511b684, type: 3}
-      insertIndex: 5
-      addedObject: {fileID: 1560499413}
     - targetCorrespondingSourceObject: {fileID: 1393795467774019477, guid: e775fd3391cf5504c9b1a65c3511b684, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1560499416}

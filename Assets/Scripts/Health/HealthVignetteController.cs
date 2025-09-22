@@ -1,29 +1,43 @@
 using UnityEngine;
-using DG.Tweening;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 
 public class HealthVignetteController : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private Health health;
-    [SerializeField] private CameraEffects cameraEffects;
-    [Tooltip("Force-enable vignette when animating.")]
-    [SerializeField] private bool ensureEnabled = true;
+    [SerializeField] private Volume cameraEffectsVolume; // Reference to the global volume
 
     [Header("Intensity Mapping (lower health => more red)")]
     [SerializeField, Range(0f, 2f)] private float intensityAtFullHealth = 0f;
     [SerializeField, Range(0f, 2f)] private float intensityAtZeroHealth = 0.6f;
 
-    [Header("Pulse Settings")]
-    [SerializeField] private bool pulseOnDamage = true;
-    [SerializeField, Min(0f)] private float pulseOvershoot = 0.15f;
-    [SerializeField, Min(0.05f)] private float pulseUpDuration = 0.1f;
-    [SerializeField, Min(0.05f)] private float pulseDownDuration = 0.2f;
+    [Header("Impulse Effect")]
+    [SerializeField, Range(0f, 2f)] private float impulseStrength = 0.4f;
+    [SerializeField, Range(0.01f, 2f)] private float impulseDuration = 0.4f;
+    [SerializeField, Range(0.01f, 2f)] private float smoothTime = 0.15f;
 
-    [Header("Heal Fade")]
-    [SerializeField, Min(0.05f)] private float healFadeDuration = 0.2f;
+    [Header("Heal Effect")]
+    [SerializeField, Range(0f, 2f)] private float healImpulseStrength = 0.4f;
+    [SerializeField, Range(0.01f, 2f)] private float healImpulseDuration = 0.4f;
+    [SerializeField] private Color healColor = Color.green;
+    [SerializeField] private Color damageColor = Color.red;
 
+    private Vignette _vignette;
     private int _lastHealth;
-    private Tween _tween;
+    private float _baseIntensity;
+    private float _impulseIntensity;
+    private float _impulseVelocity;
+    private float _impulseTimer;
+
+    // Smoothing for vignette intensity
+    private float _currentIntensity;
+    private float _intensityVelocity;
+
+    // Heal impulse
+    private float _healImpulseIntensity;
+    private float _healImpulseVelocity;
+    private float _healImpulseTimer;
 
     private void Awake()
     {
@@ -34,119 +48,105 @@ public class HealthVignetteController : MonoBehaviour
             if (health == null) health = Object.FindFirstObjectByType<Health>();
         }
 
-        if (cameraEffects == null)
-        {
-            var cam = Camera.main != null ? Camera.main : Object.FindFirstObjectByType<Camera>();
-            if (cam != null) cam.TryGetComponent(out cameraEffects);
-        }
+        if (cameraEffectsVolume == null)
+            cameraEffectsVolume = Object.FindFirstObjectByType<Volume>();
+
+        // Try to get the Vignette effect from the volume profile
+        if (cameraEffectsVolume != null && cameraEffectsVolume.profile != null)
+            cameraEffectsVolume.profile.TryGet(out _vignette);
 
         if (health != null)
             _lastHealth = health.CurrentHealth;
 
-        // Initialize to current health baseline
-        ApplyBaseForHealth(_lastHealth, health != null ? health.MaxHealth : _lastHealth, instant: true);
+        _baseIntensity = ComputeBaseIntensity(_lastHealth, health != null ? health.MaxHealth : _lastHealth);
+        _impulseIntensity = 0f;
+        _impulseTimer = 0f;
+        _healImpulseIntensity = 0f;
+        _healImpulseTimer = 0f;
+        _currentIntensity = _baseIntensity; // Initialize smoothing
+        ApplyVignette(_currentIntensity, damageColor);
     }
 
     private void OnEnable()
     {
         if (health != null)
-        {
-            health.OnHealthChanged += OnHealthChanged; // for damage pulse detection
-            health.OnHealed += OnHealed; // for heal fade
-        }
-
-        // Ensure vignette is enabled when this controller is enabled
-        if (cameraEffects != null && ensureEnabled)
-            cameraEffects.SetVignetteEnabled(true);
+            health.OnHealthChanged += OnHealthChanged;
     }
 
     private void OnDisable()
     {
         if (health != null)
-        {
             health.OnHealthChanged -= OnHealthChanged;
-            health.OnHealed -= OnHealed;
-        }
-
-        _tween?.Kill(false);
-
-        // Ensure vignette is disabled when this controller is disabled
-        if (cameraEffects != null && ensureEnabled)
-            cameraEffects.SetVignetteEnabled(false);
     }
 
-    // Damage path: only pulse on damage
+    private void Update()
+    {
+        // Smoothly decay the damage impulse effect
+        if (_impulseTimer > 0f)
+        {
+            _impulseTimer -= Time.deltaTime;
+            if (_impulseTimer <= 0f)
+            {
+                _impulseTimer = 0f;
+            }
+        }
+        _impulseIntensity = Mathf.SmoothDamp(_impulseIntensity, 0f, ref _impulseVelocity, smoothTime);
+
+        // Smoothly decay the heal impulse effect
+        if (_healImpulseTimer > 0f)
+        {
+            _healImpulseTimer -= Time.deltaTime;
+            if (_healImpulseTimer <= 0f)
+            {
+                _healImpulseTimer = 0f;
+            }
+        }
+        _healImpulseIntensity = Mathf.SmoothDamp(_healImpulseIntensity, 0f, ref _healImpulseVelocity, smoothTime);
+
+        // Smoothly interpolate vignette intensity to target
+        float targetIntensity = _baseIntensity + _impulseIntensity + _healImpulseIntensity;
+        _currentIntensity = Mathf.SmoothDamp(_currentIntensity, targetIntensity, ref _intensityVelocity, smoothTime);
+
+        // Vignette is always red except during heal impulse
+        Color vignetteColor = (_healImpulseIntensity > 0.01f) ? healColor : damageColor;
+
+        // Apply the smoothed intensity and color
+        ApplyVignette(_currentIntensity, vignetteColor);
+    }
+
     private void OnHealthChanged(int current, int max)
     {
-        if (cameraEffects == null || max <= 0)
-            return;
+        if (current < _lastHealth)
+        {
+            // Damage impulse (red)
+            _impulseIntensity = impulseStrength;
+            _impulseTimer = impulseDuration;
+        }
+        else if (current > _lastHealth)
+        {
+            // Heal impulse (green)
+            _healImpulseIntensity = healImpulseStrength;
+            _healImpulseTimer = healImpulseDuration;
+        }
 
-        bool tookDamage = current < _lastHealth;
         _lastHealth = current;
-
-        if (!tookDamage)
-            return; // safety ignore heals here; handled by OnHealed
-
-        float baseTarget = EvaluateBaseIntensity(current, max);
-
-        _tween?.Kill(false);
-        if (ensureEnabled) cameraEffects.SetVignetteEnabled(true);
-
-        if (pulseOnDamage)
-        {
-            float start = cameraEffects.GetVignetteIntensity();
-            float peakCap = Mathf.Max(intensityAtFullHealth, intensityAtZeroHealth);
-            float peak = Mathf.Min(baseTarget + pulseOvershoot, peakCap);
-
-            var seq = DOTween.Sequence();
-            seq.Append(DOVirtual.Float(start, peak, pulseUpDuration, v => cameraEffects.SetVignetteIntensity(v)));
-            seq.Append(DOVirtual.Float(peak, baseTarget, pulseDownDuration, v => cameraEffects.SetVignetteIntensity(v)));
-            _tween = seq;
-        }
-        else
-        {
-            _tween = DOVirtual.Float(cameraEffects.GetVignetteIntensity(), baseTarget, healFadeDuration, v => cameraEffects.SetVignetteIntensity(v));
-        }
+        _baseIntensity = ComputeBaseIntensity(current, max);
     }
 
-    // Heal path: fade intensity down toward new base corresponding to increased health
-    private void OnHealed(int current, int max)
+    private float ComputeBaseIntensity(int current, int max)
     {
-        if (cameraEffects == null || max <= 0)
+        if (max <= 0) return 0f;
+        return Mathf.Lerp(intensityAtZeroHealth, intensityAtFullHealth, Mathf.Clamp01((float)current / max));
+    }
+
+    private void ApplyVignette(float intensity, Color color)
+    {
+        if (_vignette == null)
             return;
 
-        float baseTarget = EvaluateBaseIntensity(current, max);
-        _tween?.Kill(false);
-        if (ensureEnabled) cameraEffects.SetVignetteEnabled(true);
-
-        _tween = DOVirtual.Float(cameraEffects.GetVignetteIntensity(), baseTarget, healFadeDuration,
-            v => cameraEffects.SetVignetteIntensity(v));
-    }
-
-    private void ApplyBaseForHealth(int current, int max, bool instant)
-    {
-        if (cameraEffects == null || max <= 0)
-            return;
-
-        float target = EvaluateBaseIntensity(current, max);
-        if (ensureEnabled) cameraEffects.SetVignetteEnabled(true);
-
-        if (instant)
-        {
-            cameraEffects.SetVignetteIntensity(target);
-        }
-        else
-        {
-            _tween?.Kill(false);
-            _tween = DOVirtual.Float(cameraEffects.GetVignetteIntensity(), target, healFadeDuration,
-                v => cameraEffects.SetVignetteIntensity(v));
-        }
-    }
-
-    // Maps health fraction to base vignette intensity (lower health => higher intensity).
-    private float EvaluateBaseIntensity(int current, int max)
-    {
-        float healthFrac = Mathf.Clamp01(max > 0 ? (float)current / max : 0f);
-        return Mathf.Lerp(intensityAtZeroHealth, intensityAtFullHealth, healthFrac);
+        _vignette.intensity.value = Mathf.Clamp01(intensity);
+        _vignette.intensity.overrideState = true;
+        _vignette.color.value = color;
+        _vignette.color.overrideState = true;
     }
 }
