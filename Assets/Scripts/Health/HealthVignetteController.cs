@@ -107,8 +107,9 @@ public class HealthVignetteController : MonoBehaviour
         float targetIntensity = _baseIntensity + _impulseIntensity + _healImpulseIntensity;
         _currentIntensity = Mathf.SmoothDamp(_currentIntensity, targetIntensity, ref _intensityVelocity, smoothTime);
 
-        // Vignette is always red except during heal impulse
-        Color vignetteColor = (_healImpulseIntensity > 0.01f) ? healColor : damageColor;
+        // Blend between red and green during heal impulse
+        float healBlend = Mathf.InverseLerp(0f, healImpulseStrength, _healImpulseIntensity);
+        Color vignetteColor = Color.Lerp(damageColor, healColor, healBlend);
 
         // Apply the smoothed intensity and color
         ApplyVignette(_currentIntensity, vignetteColor);

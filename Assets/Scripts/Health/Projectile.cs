@@ -25,6 +25,8 @@ public class Projectile : MonoBehaviour
         if (health != null)
         {
             health.TakeDamage(damage);
+            Destroy(gameObject);
+            return;
         }
 
         // Try HealthEntity component
@@ -32,10 +34,11 @@ public class Projectile : MonoBehaviour
         if (healthEntity != null)
         {
             healthEntity.TakeDamage(damage);
+            Destroy(gameObject);
+            return;
         }
-
-       // Destroy(gameObject);
     }
+
     private void OnTriggerEnter(Collider other)
     {
         // Try Health component
@@ -43,6 +46,8 @@ public class Projectile : MonoBehaviour
         if (health != null)
         {
             health.TakeDamage(damage);
+            Destroy(gameObject);
+            return;
         }
 
         // Try HealthEntity component
@@ -50,8 +55,8 @@ public class Projectile : MonoBehaviour
         if (healthEntity != null)
         {
             healthEntity.TakeDamage(damage);
+            Destroy(gameObject);
+            return;
         }
-
-       // Destroy(gameObject);
     }
 }
