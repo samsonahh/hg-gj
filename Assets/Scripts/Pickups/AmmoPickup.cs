@@ -2,11 +2,11 @@ using UnityEngine;
 
 public class AmmoPickup : PickupBase
 {
-    private Shotgun shotgun;
+    private ShotgunState shotgun;
 
     private void Awake()
     {
-        shotgun = Object.FindFirstObjectByType<Shotgun>();
+        shotgun = Object.FindFirstObjectByType<ShotgunState>();
     }
 
     protected override bool CanPickup(Collider other)
@@ -18,7 +18,7 @@ public class AmmoPickup : PickupBase
     {
         // Try to find the Shotgun in the scene, even if it was not found in Awake
         if (shotgun == null || !shotgun.gameObject.activeInHierarchy)
-            shotgun = Object.FindFirstObjectByType<Shotgun>(UnityEngine.FindObjectsInactive.Include);
+            shotgun = Object.FindFirstObjectByType<ShotgunState>(UnityEngine.FindObjectsInactive.Include);
 
         if (shotgun != null)
         {

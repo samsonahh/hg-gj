@@ -12,7 +12,6 @@ public class ShotgunState : WeaponState
     [Header("Shotgun Config")]
     [SerializeField] private GameObject projectilePrefab;
     [SerializeField] private Transform firePoint;
-    [SerializeField] private float spreadAngle = 10f;
     [SerializeField] private int damagePerProjectile = 10;
     [SerializeField] private int maxAmmo = 8;
     [SerializeField] private int currentAmmo = 8;
