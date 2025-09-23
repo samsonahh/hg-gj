@@ -16,6 +16,7 @@ public class FistState : WeaponState
     [SerializeField] private int fistDamage = 10;
     [SerializeField] private float punchRayDistance = 2.5f;
     [SerializeField] private LayerMask enemyLayer;
+    [SerializeField] private float punchCooldown = 0.2f;
 
     [Header("Parry Settings")]
     [SerializeField] private float parryWindow = 0.25f;
@@ -26,6 +27,7 @@ public class FistState : WeaponState
 
     private bool isParrying = false;
     private float lastParryTime = -Mathf.Infinity;
+    private float lastPunchTime = -Mathf.Infinity;
 
     public override void Enter()
     {
@@ -61,7 +63,6 @@ public class FistState : WeaponState
 
         if (playerCamera == null) return;
 
-        // Use the same ray as ReticleUI
         Ray ray = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
         float distance = punchRayDistance;
         if (reticleUI != null)

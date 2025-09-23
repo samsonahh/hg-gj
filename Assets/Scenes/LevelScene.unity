@@ -22941,15 +22941,16 @@ MonoBehaviour:
   animancer: {fileID: 4321517951611552173}
   walkClip: {fileID: 7400000, guid: 514d143fff6b8ff44b8ed50cab906505, type: 2}
   parryClip: {fileID: 7400000, guid: 83cc35cad3d46274391fced15d3612e7, type: 2}
-  punchClip: {fileID: 7400000, guid: 83cc35cad3d46274391fced15d3612e7, type: 2}
+  punchClip: {fileID: 7400000, guid: 8b340faf64d60004294a56792c3ccc02, type: 2}
   playerCamera: {fileID: 1560499416}
   parryWindowObject: {fileID: 2013997920}
   reticleUI: {fileID: 745151115}
   fistDamage: 10
-  punchRayDistance: 3
+  punchRayDistance: 5
   enemyLayer:
     serializedVersion: 2
     m_Bits: 256
+  punchCooldown: 0.2
   parryWindow: 1
   parryCooldown: 1
   debugRaycast: 0
@@ -23235,6 +23236,10 @@ PrefabInstance:
     - target: {fileID: 3081302648171837803, guid: a3c4435ee71cb294898ea26fd18ad5ee, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6792714184486662683, guid: a3c4435ee71cb294898ea26fd18ad5ee, type: 3}
+      propertyPath: damage
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 6792714184486662683, guid: a3c4435ee71cb294898ea26fd18ad5ee, type: 3}
       propertyPath: reticleUI

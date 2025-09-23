@@ -17,7 +17,7 @@ public class WeaponController : MonoBehaviour
             InputManager.Instance.RightClick += OnParry;
             InputManager.Instance.Jump += OnJump;
             InputManager.Instance.Scroll += OnScroll;
-            // Add more as needed (e.g., reload)
+   
         }
     }
 
@@ -29,7 +29,6 @@ public class WeaponController : MonoBehaviour
             InputManager.Instance.RightClick -= OnParry;
             InputManager.Instance.Jump -= OnJump;
             InputManager.Instance.Scroll -= OnScroll;
-            // Remove more as needed
         }
     }
 

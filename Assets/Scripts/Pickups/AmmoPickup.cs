@@ -22,7 +22,7 @@ public class AmmoPickup : PickupBase
 
         if (shotgun != null)
         {
-            shotgun.Reload();
+            shotgun.RefillAmmo();
         }
     }
 }

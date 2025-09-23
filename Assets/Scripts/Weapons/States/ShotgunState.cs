@@ -12,7 +12,7 @@ public class ShotgunState : WeaponState
     [Header("Shotgun Config")]
     [SerializeField] private GameObject projectilePrefab;
     [SerializeField] private Transform firePoint;
-    [SerializeField] private int damagePerProjectile = 10;
+    [SerializeField] private int damage = 10; // Renamed from damagePerProjectile
     [SerializeField] private int maxAmmo = 8;
     [SerializeField] private int currentAmmo = 8;
     [SerializeField] private bool infiniteAmmo = false;
@@ -47,6 +47,7 @@ public class ShotgunState : WeaponState
         }
     }
     public event Action<int, int> OnAmmoChanged = delegate { };
+    public event Action OnAmmoPickup;
 
     private bool canFire = true;
     private Quaternion originalRotation;
@@ -61,7 +62,6 @@ public class ShotgunState : WeaponState
         animancer.Play(walkClip);
         gameObject.SetActive(true);
 
-        // Set the reticle ray distance to match the shotgun
         if (reticleUI != null)
             reticleUI.RayDistance = shootRayDistance;
 
@@ -103,7 +103,6 @@ public class ShotgunState : WeaponState
 
         var state = animancer.Play(shootClip);
 
-        // Set shoot animation duration
         if (shootClip != null && state != null)
         {
             state.Duration = shootDuration;
@@ -116,24 +115,7 @@ public class ShotgunState : WeaponState
             {
                 Vector3 shootDirection = GetShootDirection();
                 FireProjectile(shootDirection, 0f);
-
-                // Example: Raycast for hit detection (center of camera, enemyLayer, shootRayDistance)
-                if (playerCamera != null)
-                {
-                    Ray ray = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
-                    float distance = shootRayDistance;
-                    if (reticleUI != null)
-                        distance = reticleUI.RayDistance;
-
-                    if (Physics.Raycast(ray, out RaycastHit hit, distance, enemyLayer))
-                    {
-                        var health = hit.collider.GetComponent<HealthEntity>();
-                        if (health != null)
-                        {
-                            health.TakeDamage(damagePerProjectile);
-                        }
-                    }
-                }
+                // No raycast damage here!
             });
             events.OnEnd = OnReload;
         }
@@ -154,11 +136,8 @@ public class ShotgunState : WeaponState
         if (reloadState.Events(this, out var reloadEvents))
         {
             reloadEvents.Clear();
-            // The event fires at the end of the reload animation (normalized time 0.999f to avoid looping issues)
             reloadEvents.Add(0.999f, OnReloadAnimationEnd);
         }
-
-        currentAmmo = maxAmmo;
     }
 
     private void OnReloadAnimationEnd()
@@ -206,13 +185,20 @@ public class ShotgunState : WeaponState
         Projectile projectile = proj.GetComponent<Projectile>();
         if (projectile != null)
         {
-            projectile.SetDamage(damagePerProjectile);
+            projectile.SetDamage(damage); // Use the new damage field
         }
     }
 
     public void Reload()
     {
         OnReload();
+    }
+
+    public void RefillAmmo()
+    {
+        currentAmmo = maxAmmo;
+        OnAmmoChanged?.Invoke(currentAmmo, maxAmmo);
+        OnAmmoPickup?.Invoke();
     }
 
 #if UNITY_EDITOR
@@ -227,7 +213,6 @@ public class ShotgunState : WeaponState
         if (!debugRaycast || playerCamera == null)
             return;
 
-        // Use the same ray as in GetShootDirection
         Ray ray = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
         float distance = shootRayDistance;
         Gizmos.color = Color.yellow;
