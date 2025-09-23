@@ -23239,7 +23239,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6792714184486662683, guid: a3c4435ee71cb294898ea26fd18ad5ee, type: 3}
       propertyPath: damage
-      value: 50
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 6792714184486662683, guid: a3c4435ee71cb294898ea26fd18ad5ee, type: 3}
       propertyPath: reticleUI

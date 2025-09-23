@@ -59,7 +59,7 @@ public class FistState : WeaponState
     public override void OnShoot()
     {
         // Always play and restart the punch animation
-        var state = animancer.Play(punchClip);
+        var state = animancer.Play(punchClip, 0.25f, Animancer.FadeMode.FromStart); // Blend in punch
         if (punchClip != null && state != null)
         {
             state.Time = 0f; // Restart animation
@@ -78,7 +78,7 @@ public class FistState : WeaponState
             if (state.Events(this, out var events))
             {
                 events.Clear();
-                events.Add(0.5f, () =>
+                events.Add(0.01f, () =>
                 {
                     if (playerCamera == null) return;
 
@@ -101,6 +101,8 @@ public class FistState : WeaponState
                         }
                     }
                 });
+                // Blend to walk after punch finishes
+                events.OnEnd = () => animancer.Play(walkClip, 0.25f, Animancer.FadeMode.FromStart);
             }
         }
     }
