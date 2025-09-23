@@ -5,23 +5,26 @@ public class ShotgunUI : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private TextMeshProUGUI ammoText;
-    [SerializeField] private Shotgun shotgun;
+    [SerializeField] private ShotgunState shotgunState;
 
     private void OnEnable()
     {
-        shotgun.OnAmmoChanged += UpdateAmmoUI;
-        UpdateAmmoUI(shotgun.CurrentAmmo, shotgun.MaxAmmo);
+        if (shotgunState != null)
+        {
+            shotgunState.OnAmmoChanged += UpdateAmmoUI;
+            UpdateAmmoUI(shotgunState.CurrentAmmo, shotgunState.MaxAmmo);
+        }
     }
 
     private void OnDisable()
     {
-        if (shotgun != null)
-            shotgun.OnAmmoChanged -= UpdateAmmoUI;
+        if (shotgunState != null)
+            shotgunState.OnAmmoChanged -= UpdateAmmoUI;
     }
 
     private void UpdateAmmoUI(int current, int max)
     {
-        if (shotgun != null && shotgun.InfiniteAmmo)
+        if (shotgunState != null && shotgunState.InfiniteAmmo)
         {
             if (ammoText != null)
                 ammoText.text = $"Ammo: \u221E";

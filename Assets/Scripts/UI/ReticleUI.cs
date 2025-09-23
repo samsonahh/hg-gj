@@ -60,4 +60,10 @@ public class ReticleUI : MonoBehaviour
         Gizmos.DrawLine(_lastRayOrigin, _lastHitPoint);
         Gizmos.DrawSphere(_lastHitPoint, 0.05f);
     }
+
+    public float RayDistance
+    {
+        get => rayDistance;
+        set => rayDistance = value;
+    }
 }
