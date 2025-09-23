@@ -22947,10 +22947,10 @@ MonoBehaviour:
   reticleUI: {fileID: 745151115}
   fistDamage: 10
   punchRayDistance: 5
+  punchCooldown: 0
   enemyLayer:
     serializedVersion: 2
     m_Bits: 256
-  punchCooldown: 0.2
   parryWindow: 1
   parryCooldown: 1
   debugRaycast: 0
@@ -23246,9 +23246,21 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 745151115}
     - target: {fileID: 6792714184486662683, guid: a3c4435ee71cb294898ea26fd18ad5ee, type: 3}
+      propertyPath: jumpEndClip
+      value: 
+      objectReference: {fileID: 7400000, guid: 3e737830a80537b4fa2cfba4c5f11747, type: 2}
+    - target: {fileID: 6792714184486662683, guid: a3c4435ee71cb294898ea26fd18ad5ee, type: 3}
       propertyPath: playerCamera
       value: 
       objectReference: {fileID: 1560499416}
+    - target: {fileID: 6792714184486662683, guid: a3c4435ee71cb294898ea26fd18ad5ee, type: 3}
+      propertyPath: jumpStartClip
+      value: 
+      objectReference: {fileID: 7400000, guid: db858b72b78f09442a743555172072c6, type: 2}
+    - target: {fileID: 6792714184486662683, guid: a3c4435ee71cb294898ea26fd18ad5ee, type: 3}
+      propertyPath: jumpMiddleClip
+      value: 
+      objectReference: {fileID: 7400000, guid: 1f60230835acf0446ab78ee9dc99a7a0, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

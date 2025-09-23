@@ -15,6 +15,7 @@ public class FistState : WeaponState
     [Header("Punch Settings")]
     [SerializeField] private int fistDamage = 10;
     [SerializeField] private float punchRayDistance = 2.5f;
+    [SerializeField] private float punchCooldown = 0.5f;
     [SerializeField] private LayerMask enemyLayer;
 
     [Header("Parry Settings")]
@@ -57,26 +58,49 @@ public class FistState : WeaponState
 
     public override void OnShoot()
     {
-        animancer.Play(punchClip);
-
-        if (playerCamera == null) return;
-
-        Ray ray = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
-        float distance = punchRayDistance;
-        if (reticleUI != null)
-            distance = reticleUI.RayDistance;
-
-        if (debugRaycast)
+        // Always play and restart the punch animation
+        var state = animancer.Play(punchClip);
+        if (punchClip != null && state != null)
         {
-            Debug.DrawRay(ray.origin, ray.direction * distance, Color.red, 0.5f);
-        }
+            state.Time = 0f; // Restart animation
 
-        if (Physics.Raycast(ray, out RaycastHit hit, distance, enemyLayer))
-        {
-            var health = hit.collider.GetComponent<HealthEntity>();
-            if (health != null)
+            // Safety check: Only set duration if both are valid and non-zero
+            if (punchCooldown > 0.01f && punchClip.length > 0.01f)
             {
-                health.TakeDamage(fistDamage);
+                state.Duration = punchCooldown;
+            }
+            else
+            {
+                // Fallback: play at normal speed
+                state.Duration = punchClip.length;
+            }
+
+            if (state.Events(this, out var events))
+            {
+                events.Clear();
+                events.Add(0.5f, () =>
+                {
+                    if (playerCamera == null) return;
+
+                    Ray ray = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
+                    float distance = punchRayDistance;
+                    if (reticleUI != null)
+                        distance = reticleUI.RayDistance;
+
+                    if (debugRaycast)
+                    {
+                        Debug.DrawRay(ray.origin, ray.direction * distance, Color.red, 0.5f);
+                    }
+
+                    if (Physics.Raycast(ray, out RaycastHit hit, distance, enemyLayer))
+                    {
+                        var health = hit.collider.GetComponent<HealthEntity>();
+                        if (health != null)
+                        {
+                            health.TakeDamage(fistDamage);
+                        }
+                    }
+                });
             }
         }
     }

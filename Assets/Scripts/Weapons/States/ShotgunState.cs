@@ -7,12 +7,12 @@ public class ShotgunState : WeaponState
 {
     [Header("Animancer")]
     [SerializeField] private AnimancerComponent animancer;
-    [SerializeField] private AnimationClip walkClip, reload1Clip, reload2Clip, jumpClip, shootClip;
+    [SerializeField] private AnimationClip walkClip, reload1Clip, reload2Clip, jumpStartClip, jumpEndClip, shootClip;
 
     [Header("Shotgun Config")]
     [SerializeField] private GameObject projectilePrefab;
     [SerializeField] private Transform firePoint;
-    [SerializeField] private int damage = 10; // Renamed from damagePerProjectile
+    [SerializeField] private int damage = 10;
     [SerializeField] private int maxAmmo = 8;
     [SerializeField] private int currentAmmo = 8;
     [SerializeField] private bool infiniteAmmo = false;
@@ -52,6 +52,9 @@ public class ShotgunState : WeaponState
     private bool canFire = true;
     private Quaternion originalRotation;
 
+    private PlayerController playerController;
+    private bool wasGrounded = true;
+
     private void Awake()
     {
         originalRotation = transform.localRotation;
@@ -61,6 +64,9 @@ public class ShotgunState : WeaponState
     {
         animancer.Play(walkClip);
         gameObject.SetActive(true);
+
+        playerController = UnityEngine.Object.FindFirstObjectByType<PlayerController>();
+        wasGrounded = playerController != null ? playerController.IsGrounded : true;
 
         if (reticleUI != null)
             reticleUI.RayDistance = shootRayDistance;
@@ -82,6 +88,26 @@ public class ShotgunState : WeaponState
             InputManager.Instance.Shoot -= OnShoot;
             InputManager.Instance.Jump -= OnJump;
         }
+    }
+
+    private void Update()
+    {
+        if (playerController == null) return;
+
+        bool isGrounded = playerController.IsGrounded;
+        if (!wasGrounded && isGrounded)
+        {
+            // Smoothly blend to jumpEndClip
+            var state = animancer.Play(jumpEndClip, 0.25f, Animancer.FadeMode.FromStart);
+            if (state.Events(this, out var events))
+            {
+                events.Clear();
+                // Smoothly blend to walk after jumpEndClip finishes
+                events.OnEnd = () => animancer.Play(walkClip, 0.25f, Animancer.FadeMode.FromStart);
+            }
+            canFire = true;
+        }
+        wasGrounded = isGrounded;
     }
 
     public override void OnShoot()
@@ -150,12 +176,15 @@ public class ShotgunState : WeaponState
 
     public override void OnJump()
     {
-        animancer.Play(jumpClip);
+        // Smoothly blend to jumpStartClip
+        animancer.Play(jumpStartClip, 0.25f, Animancer.FadeMode.FromStart);
+        wasGrounded = false;
     }
 
     public override void OnWalk()
     {
-        animancer.Play(walkClip);
+        // Always blend to walk for consistency
+        animancer.Play(walkClip, 0.25f, Animancer.FadeMode.FromStart);
     }
 
     private Vector3 GetShootDirection()
@@ -185,7 +214,7 @@ public class ShotgunState : WeaponState
         Projectile projectile = proj.GetComponent<Projectile>();
         if (projectile != null)
         {
-            projectile.SetDamage(damage); // Use the new damage field
+            projectile.SetDamage(damage);
         }
     }
 
