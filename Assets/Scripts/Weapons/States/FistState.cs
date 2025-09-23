@@ -16,7 +16,6 @@ public class FistState : WeaponState
     [SerializeField] private int fistDamage = 10;
     [SerializeField] private float punchRayDistance = 2.5f;
     [SerializeField] private LayerMask enemyLayer;
-    [SerializeField] private float punchCooldown = 0.2f;
 
     [Header("Parry Settings")]
     [SerializeField] private float parryWindow = 0.25f;
@@ -27,7 +26,6 @@ public class FistState : WeaponState
 
     private bool isParrying = false;
     private float lastParryTime = -Mathf.Infinity;
-    private float lastPunchTime = -Mathf.Infinity;
 
     public override void Enter()
     {
