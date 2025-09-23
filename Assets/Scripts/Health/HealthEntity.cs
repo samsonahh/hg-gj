@@ -19,6 +19,12 @@ public class HealthEntity : MonoBehaviour
     [Tooltip("Local positions around this entity where effects or objects can spawn.")]
     [SerializeField] private List<Vector3> spawnPositions = new List<Vector3>();
 
+    [Header("Effect Randomization")]
+    [Tooltip("Maximum random offset applied to each axis when spawning effects.")]
+    [SerializeField] private float effectRandomOffset = 0.15f;
+
+    private int lastSpawnIndex = -1; // Track last used spawn index
+
     public int MaxHealth => maxHealth;
     public int CurrentHealth => currentHealth;
 
@@ -41,14 +47,26 @@ public class HealthEntity : MonoBehaviour
         currentHealth = Mathf.Max(currentHealth - amount, 0);
         OnHealthChanged.Invoke(currentHealth, maxHealth);
 
-        // Instantiate damage effect at a random spawn position, not parented to this entity
+        // Instantiate damage effect at a random spawn position, with a small random offset
         if (damageEffectPrefab != null && spawnPositions != null && spawnPositions.Count > 0)
         {
-            int randomIndex = UnityEngine.Random.Range(0, spawnPositions.Count);
-            Vector3 worldPos = transform.TransformPoint(spawnPositions[randomIndex]);
+            int randomIndex = GetNonRepeatingRandomIndex();
+            lastSpawnIndex = randomIndex;
+
+            Vector3 baseWorldPos = transform.TransformPoint(spawnPositions[randomIndex]);
+
+            // Generate a small random offset using Perlin-like smooth randomness
+            float timeSeed = Time.time * 10f + UnityEngine.Random.value * 100f;
+            float offsetX = (Mathf.PerlinNoise(timeSeed, baseWorldPos.x) - 0.5f) * 2f * effectRandomOffset;
+            float offsetY = (Mathf.PerlinNoise(timeSeed + 33.3f, baseWorldPos.y) - 0.5f) * 2f * effectRandomOffset;
+            float offsetZ = (Mathf.PerlinNoise(timeSeed + 77.7f, baseWorldPos.z) - 0.5f) * 2f * effectRandomOffset;
+            Vector3 randomOffset = new Vector3(offsetX, offsetY, offsetZ);
+
+            Vector3 spawnPos = baseWorldPos + randomOffset;
+
             GameObject effect = Instantiate(
                 damageEffectPrefab,
-                worldPos,
+                spawnPos,
                 Quaternion.identity
             );
             Destroy(effect, 1.5f);
@@ -56,6 +74,21 @@ public class HealthEntity : MonoBehaviour
 
         if (currentHealth == 0)
             Die();
+    }
+
+    /// <summary>
+    /// Returns a random index that is not the same as the last used index.
+    /// </summary>
+    private int GetNonRepeatingRandomIndex()
+    {
+        int count = spawnPositions.Count;
+        if (count == 1) return 0;
+        int index;
+        do
+        {
+            index = UnityEngine.Random.Range(0, count);
+        } while (index == lastSpawnIndex);
+        return index;
     }
 
     /// <summary>
@@ -111,8 +144,6 @@ public class HealthEntity : MonoBehaviour
         {
             Vector3 worldPos = transform.TransformPoint(localPos);
             Gizmos.DrawSphere(worldPos, 0.15f);
-
-
         }
     }
 }

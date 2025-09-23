@@ -38,7 +38,6 @@ public class Shotgun : MonoBehaviour
     [SerializeField] private float maxRange = 100f;
 
     [Header("Flip Config")]
-    [SerializeField] private float defaultFlipAngle = 360f;
     [SerializeField] private float trickDuration = 1.0f;
 
     private bool canFire = true;
