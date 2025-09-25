@@ -22951,7 +22951,7 @@ MonoBehaviour:
   enemyLayer:
     serializedVersion: 2
     m_Bits: 256
-  parryWindow: 1
+  parryWindow: 0.65
   parryCooldown: 1
   debugRaycast: 0
 --- !u!95 &4321517951611552175
