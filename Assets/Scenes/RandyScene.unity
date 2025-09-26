@@ -14951,8 +14951,8 @@ MonoBehaviour:
   grainSpeed: 1.5
   grainLuminanceResponse: 1
   grainSeedJitter: {x: 37.2, y: 91.7}
-  pixelateOn: 1
-  pixelSize: 3
+  pixelateOn: 0
+  pixelSize: 8
 --- !u!114 &1560499415
 MonoBehaviour:
   m_ObjectHideFlags: 0
