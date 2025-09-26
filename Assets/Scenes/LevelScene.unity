@@ -22242,7 +22242,7 @@ GameObject:
   - component: {fileID: 2086484388}
   - component: {fileID: 2086484387}
   - component: {fileID: 2086484386}
-  m_Layer: 7
+  m_Layer: 10
   m_Name: Cube (9)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -23474,6 +23474,14 @@ PrefabInstance:
     - target: {fileID: 6012633994290963282, guid: ba4d0746fceda0f419e2fc5757ede4e8, type: 3}
       propertyPath: <GroundedSuperState>k__BackingField.groundLayerMask.m_Bits
       value: 136
+      objectReference: {fileID: 0}
+    - target: {fileID: 6012633994290963282, guid: ba4d0746fceda0f419e2fc5757ede4e8, type: 3}
+      propertyPath: <AirborneSuperState>k__BackingField.<MoveState>k__BackingField.acceleration
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 6012633994290963282, guid: ba4d0746fceda0f419e2fc5757ede4e8, type: 3}
+      propertyPath: <GroundedSuperState>k__BackingField.<SprintState>k__BackingField.targetSpeed
+      value: 25
       objectReference: {fileID: 0}
     - target: {fileID: 6012633994290963282, guid: ba4d0746fceda0f419e2fc5757ede4e8, type: 3}
       propertyPath: <GroundedSuperState>k__BackingField.<SprintState>k__BackingField.sprintParticleSystem
