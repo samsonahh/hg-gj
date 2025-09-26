@@ -39,6 +39,7 @@ public abstract class EnemyAIBase : MonoBehaviour
     [SerializeField] protected int magazineSize = 5;
     [SerializeField] protected float muzzleVerticalOffset = 1.2f;
     [SerializeField] protected int projectileDamage = 10;
+    [SerializeField] protected float projectileSpeed = 20f;
 
     [Header("Reload"), Tooltip("Reload timing for ranged attacks.")]
     [SerializeField] protected float reloadDuration = 2.0f;
@@ -275,7 +276,10 @@ public abstract class EnemyAIBase : MonoBehaviour
             var projObj = Instantiate(projectilePrefab, firePoint.position, Quaternion.LookRotation(dir, Vector3.up));
             var proj = projObj.GetComponent<Projectile>();
             if (proj != null)
+            {
                 proj.SetDamage(projectileDamage);
+                proj.SetSpeed(projectileSpeed);
+            }
 
             _currentAmmo--;
             _shotCooldown = timeBetweenShots;
@@ -422,4 +426,35 @@ public abstract class EnemyAIBase : MonoBehaviour
     public int CurrentAmmo => _currentAmmo;
     public int MagazineSize => magazineSize;
     public Transform CurrentTarget => _target;
+
+#if UNITY_EDITOR
+private void OnDrawGizmosSelected()
+{
+    if (!showGizmos)
+        return;
+
+    // Sight range
+    Gizmos.color = sightColor;
+    Gizmos.DrawWireSphere(transform.position, sightRange);
+
+    // Attack range
+    Gizmos.color = attackColor;
+    Gizmos.DrawWireSphere(transform.position, attackRange);
+
+    // Walk point
+    if (_hasWalkPoint)
+    {
+        Gizmos.color = walkPointColor;
+        Gizmos.DrawWireSphere(_walkPoint, 0.3f);
+    }
+
+    // Target
+    if (_target != null)
+    {
+        Gizmos.color = targetColor;
+        Gizmos.DrawLine(transform.position, _target.position);
+        Gizmos.DrawWireSphere(_target.position, 0.2f);
+    }
+}
+#endif
 }

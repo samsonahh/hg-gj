@@ -25,7 +25,10 @@ public class EnemyAI : EnemyAIBase
             var projObj = Instantiate(projectilePrefab, firePoint.position, Quaternion.LookRotation(dir, Vector3.up));
             var proj = projObj.GetComponent<Projectile>();
             if (proj != null)
+            {
                 proj.SetDamage(projectileDamage);
+                proj.SetSpeed(projectileSpeed);
+            }
 
             _currentAmmo--;
             _shotCooldown = timeBetweenShots;

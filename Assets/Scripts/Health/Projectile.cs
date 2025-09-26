@@ -17,12 +17,16 @@ public class Projectile : MonoBehaviour
     {
         transform.position += transform.forward * speed * Time.deltaTime;
     }
+    public void SetSpeed(float newSpeed)
+    {
+        speed = newSpeed;
+    }
 
     private void OnCollisionEnter(Collision collision)
     {
         // Try Health component
         Health health = collision.gameObject.GetComponent<Health>();
-        if (health != null)
+        if (health != null && health.gameObject != null && health.gameObject.activeInHierarchy)
         {
             health.TakeDamage(damage);
             Destroy(gameObject);
@@ -31,7 +35,7 @@ public class Projectile : MonoBehaviour
 
         // Try HealthEntity component
         HealthEntity healthEntity = collision.gameObject.GetComponent<HealthEntity>();
-        if (healthEntity != null)
+        if (healthEntity != null && healthEntity.gameObject != null && healthEntity.gameObject.activeInHierarchy)
         {
             healthEntity.TakeDamage(damage);
             Destroy(gameObject);
@@ -43,7 +47,7 @@ public class Projectile : MonoBehaviour
     {
         // Try Health component
         Health health = other.gameObject.GetComponent<Health>();
-        if (health != null)
+        if (health != null && health.gameObject != null && health.gameObject.activeInHierarchy)
         {
             health.TakeDamage(damage);
             Destroy(gameObject);
@@ -52,11 +56,12 @@ public class Projectile : MonoBehaviour
 
         // Try HealthEntity component
         HealthEntity healthEntity = other.gameObject.GetComponent<HealthEntity>();
-        if (healthEntity != null)
+        if (healthEntity != null && healthEntity.gameObject != null && healthEntity.gameObject.activeInHierarchy)
         {
             healthEntity.TakeDamage(damage);
             Destroy(gameObject);
             return;
         }
+        Destroy(gameObject);
     }
 }
