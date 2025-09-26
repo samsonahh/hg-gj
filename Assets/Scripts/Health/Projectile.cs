@@ -45,6 +45,8 @@ public class Projectile : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        if (other.CompareTag("ParryWindow"))
+            return;
         // Try Health component
         Health health = other.gameObject.GetComponent<Health>();
         if (health != null && health.gameObject != null && health.gameObject.activeInHierarchy)

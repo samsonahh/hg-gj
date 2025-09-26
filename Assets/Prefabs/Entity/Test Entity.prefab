@@ -184,7 +184,7 @@ MonoBehaviour:
   magazineSize: 5
   muzzleVerticalOffset: 1.2
   projectileDamage: 10
-  projectileSpeed: 2
+  projectileSpeed: 5
   reloadDuration: 2
   chaseSpeed: 4
   patrolSpeed: 2.2
