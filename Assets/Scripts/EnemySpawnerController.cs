@@ -13,11 +13,16 @@ public class EnemySpawnerController : MonoBehaviour
     [Header("Spawn Object Settings")]
     [SerializeField] private GameObject _spawnObjectPrefab;
     [SerializeField] private float _spawnDelay;
+    [SerializeField] private LayerMask _groundLayer;
 
     [Header("Game Settings")]
     [SerializeField] private float _maxEnemiesOnFieldAtATime;
     [SerializeField] private float _totalNumberOfEnemies;
-    [SerializeField] private float _killCounter = 0;
+
+    [Header("Win Settings")]
+    [SerializeField] GameObject _entranceObjectPrefab;
+
+    private float _killCounter = 0;
     private float _currentEnemiesOnField = 0;
     private float _intitalSpawnCounter = 0;
     private bool _hasPlayerEntered = false;
@@ -28,7 +33,7 @@ public class EnemySpawnerController : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        
+        _entranceObjectPrefab.SetActive(true);
     }
 
     // Update is called once per frame
@@ -41,12 +46,12 @@ public class EnemySpawnerController : MonoBehaviour
         }
 
         if (_currentEnemiesOnField >= _maxEnemiesOnFieldAtATime) CancelInvoke("SpawnEnemy");
+
         if (_killCounter >= _totalNumberOfEnemies)
         {
             CancelInvoke("SpawnEnemy");
-            Debug.LogWarning("You Win");
-        }
-        
+            SetEntranceObjectDeactive();
+        }        
     }
 
     public void HandleDeathLogic()
@@ -67,30 +72,30 @@ public class EnemySpawnerController : MonoBehaviour
     {
         if (_intitalSpawnCounter != _maxEnemiesOnFieldAtATime) _intitalSpawnCounter++;
 
+        float rayDist = 10f;
         Vector3 spawnCoordinates = GenerateSpawnCoordinates();
-
-        Ray ray = new Ray(spawnCoordinates, Vector3.down);
         RaycastHit hit;
 
-        if(Physics.Raycast(ray, out hit))
+        if(Physics.Raycast(spawnCoordinates, Vector3.down, out hit, rayDist, _groundLayer))
         {
-            //if (hit.collider != null)
-            //{
-            //    Debug.LogWarning(hit.collider.gameObject.name);
-            //}
             NavMeshHit navHit;
 
-            // 2 is suppose to what I assume is the walkable area index
-            if (NavMesh.SamplePosition(hit.transform.position, out navHit, 1.0f, 1))
+            if(NavMesh.SamplePosition(hit.collider.transform.position, out navHit, rayDist, NavMesh.AllAreas))
             {
-                Debug.LogWarning("Valid Spawn");
-                
-            }
-            else
-            {
-                Debug.LogWarning("Invalid Spawn");
-            }
+                int walkableAreaID = NavMesh.GetAreaFromName("Walkable");
+                int areaMask = navHit.mask;
+
+                if (CheckIfObjectIsInWalkableArea(navHit))
+                {
+                    Debug.LogError("This area is good to walk");
+                } else
+                {
+                    Debug.LogError("This area is not good to walk");
+                }
+
+            } 
         }
+
 
 
         GameObject enemyObj = Instantiate(_spawnObjectPrefab, spawnCoordinates, Quaternion.identity);
@@ -98,9 +103,15 @@ public class EnemySpawnerController : MonoBehaviour
         _currentEnemiesOnField++;
     }
 
-    void IsSpawnValid()
+    void SetEntranceObjectDeactive() => _entranceObjectPrefab.SetActive(false);
+
+
+    bool CheckIfObjectIsInWalkableArea(NavMeshHit navHit)
     {
-        Vector3 spawnCoordinates = GenerateSpawnCoordinates();
+        int walkableAreaID = NavMesh.GetAreaFromName("Walkable");
+        int areaMask = navHit.mask;
+
+        return (areaMask & (1 << walkableAreaID)) != 0;
     }
 
     bool CheckIfPlayerEntered() => Physics.CheckSphere(transform.position, _triggerZoneSize, _playerLayer);
