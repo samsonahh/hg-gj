@@ -597,7 +597,7 @@ MonoBehaviour:
   timeBetweenShots: 1
   magazineSize: 1
   muzzleVerticalOffset: 1.2
-  projectileDamage: 15
+  projectileDamage: 35
   projectileSpeed: 20
   reloadDuration: 2
   chaseSpeed: 4
