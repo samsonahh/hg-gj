@@ -5,6 +5,8 @@ using UnityEngine.UI;
 
 public class SplashScreen : MonoBehaviour
 {
+    private static bool splashScreenShown = false;
+    
     [Header("References")]
     [SerializeField] private Image backgroundImage;
     [SerializeField] private Image splashImage;
@@ -26,12 +28,14 @@ public class SplashScreen : MonoBehaviour
 
     private IEnumerator PlaySplashScreenCoroutine()
     {
-        if (skipSplash)
+        if (splashScreenShown || skipSplash)
         {
             gameObject.SetActive(false);
             yield break;
         }
 
+        splashScreenShown = true;
+        
         backgroundImage.gameObject.SetActive(true);
 
         splashImage.color = new Color(1f, 1f, 1f, 0f); // clear white

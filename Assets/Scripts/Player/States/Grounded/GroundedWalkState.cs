@@ -6,7 +6,7 @@ namespace PlayerStates
     public class GroundedWalkState : State<PlayerController>
     {
         [SerializeField] private float speed = 3f;
-        [SerializeField] private float decceleration = 5f;
+        [SerializeField] private float deceleration = 5f;
 
         private protected override void OnEnter()
         {
@@ -25,7 +25,7 @@ namespace PlayerStates
             Vector3 targetVelocity = speed * moveDirection;
             Vector3 newVelocity = targetVelocity;
             if(context.PlanarVelocity.magnitude > speed)
-                newVelocity = Vector3.Lerp(context.PlanarVelocity, targetVelocity, decceleration * Time.deltaTime);
+                newVelocity = Vector3.Lerp(context.PlanarVelocity, targetVelocity, deceleration * Time.deltaTime);
             
             context.SetPlanarVelocity(newVelocity);
             context.ApplyPlanarVelocity();

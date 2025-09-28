@@ -18,7 +18,6 @@ namespace PlayerStates
         [field: Header("Config")]
         [field: SerializeField] public float GroundCheckDistance { get; private set; } = 1f;
         [field: SerializeField] public float GroundCheckRadius { get; private set; } = 1f;
-        [SerializeField] private LayerMask groundLayerMask;
         [SerializeField] private float groundedYVelocity = -5f;
         [SerializeField] private float jumpHeight = 1.5f;
         [SerializeField] private float coyoteTime = 0.5f;
@@ -42,6 +41,14 @@ namespace PlayerStates
             
             context.Input.Jump += Input_Jump;
             context.Input.Crouch += Input_Crouch;
+            
+            context.WallRunState.ResetPreviousWall();
+            
+            if (context.Input.InputActions.Player.Crouch.IsPressed())
+            {
+                SubStateMachine.ChangeState(SlideState);
+                return;
+            }
         }
 
         private protected override void OnExit()
@@ -55,7 +62,7 @@ namespace PlayerStates
 
         private protected override void OnUpdate()
         {
-            context.ApplyGravity();
+            context.ApplyGravity(false);
         }
 
         private protected override void OnFixedUpdate()
@@ -75,10 +82,9 @@ namespace PlayerStates
             return null;
         }
         
-
         public void CheckGrounded()
         {
-            IsGrounded = Physics.CheckSphere(context.transform.position + GroundCheckDistance * Vector3.down, GroundCheckRadius, groundLayerMask);
+            IsGrounded = Physics.CheckSphere(context.transform.position + GroundCheckDistance * Vector3.down, GroundCheckRadius, context.GroundLayerMask);
         }
 
         private void Input_Jump()
@@ -89,7 +95,7 @@ namespace PlayerStates
             if (hasJumped)
                 return;
 
-            float jumpForce = Mathf.Sqrt(2 * jumpHeight * Mathf.Abs(Physics.gravity.y)); // Equation to calculate jump force based on desired height
+            float jumpForce = Utils.GetJumpForce(jumpHeight);
             context.SetVelocity(context.Velocity.WithY(jumpForce));
             hasJumped = true;
             

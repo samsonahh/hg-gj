@@ -2,8 +2,6 @@ Shader "Cammie/FullScreenCameraEffect"
 {
     Properties
     {
-        _Tint ("Tint", Color) = (1,1,1,1)
-        _Intensity ("Tint Intensity", Range(0,1)) = 1
         _PosterizeSteps ("Posterize Steps", Range(2,32)) = 8
 
         // Vignette (advanced)
@@ -15,14 +13,6 @@ Shader "Cammie/FullScreenCameraEffect"
         _VignetteCenter ("Vignette Center", Vector) = (0.5,0.5,0,0)
         _VignetteAxisScale ("Vignette Axis Scale", Vector) = (1,1,0,0)
         _VignetteRoundness ("Vignette Roundness", Range(0,1)) = 1
-
-        // Outline
-        _OutlineColor ("Outline Color", Color) = (0,0,0,1)
-        _OutlineThickness ("Outline Thickness", Float) = 1
-        _DepthThreshold ("Depth Threshold", Float) = 0.003
-        _OutlineSoftness ("Outline Softness", Float) = 0.002
-        _OutlineStrength ("Outline Strength", Float) = 1
-        _SilhouetteBackgroundThreshold ("Silhouette BG Threshold", Range(0.9,1)) = 0.995
 
         // Film Grain
         _GrainIntensity ("Grain Intensity", Range(0,1)) = 0.35
@@ -49,20 +39,16 @@ Shader "Cammie/FullScreenCameraEffect"
             #pragma fragment Frag
 
             #pragma multi_compile __ VIGNETTE_ENABLED
-            #pragma multi_compile __ OUTLINE_ENABLED
-            #pragma multi_compile __ OUTLINE_SILHOUETTE
             #pragma multi_compile __ FILMGRAIN_ENABLED
             #pragma multi_compile __ PIXELATE_ENABLED
 
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 
             TEXTURE2D(_CameraColorTexture); SAMPLER(sampler_CameraColorTexture);
-            TEXTURE2D_X(_CameraDepthTexture); SAMPLER(sampler_CameraDepthTexture);
+            TEXTURE2D(_CameraDepthTexture); SAMPLER(sampler_CameraDepthTexture);
 
             float4 _CameraColorTexture_TexelSize;
 
-            float4 _Tint;
-            float  _Intensity;
             int    _PosterizeSteps;
 
             // Vignette
@@ -74,14 +60,6 @@ Shader "Cammie/FullScreenCameraEffect"
             float4 _VignetteCenter;
             float4 _VignetteAxisScale;
             float  _VignetteRoundness;
-
-            // Outline
-            float4 _OutlineColor;
-            float  _OutlineThickness;
-            float  _DepthThreshold;
-            float  _OutlineSoftness;
-            float  _OutlineStrength;
-            float  _SilhouetteBackgroundThreshold;
 
             // Film grain
             float  _GrainIntensity;
@@ -114,53 +92,6 @@ Shader "Cammie/FullScreenCameraEffect"
                 return floor(c * s + 0.5) / s;
             }
 
-            float LinearEyeDepthSample(float2 uv)
-            {
-                float raw = SAMPLE_TEXTURE2D_X(_CameraDepthTexture, sampler_CameraDepthTexture, uv).r;
-                return LinearEyeDepth(raw, _ZBufferParams);
-            }
-
-            // Depth-only silhouette edge (existing simple impl)
-            float SampleOutlineDepth(float2 uv)
-            {
-            #ifndef OUTLINE_ENABLED
-                return 0;
-            #else
-                float center = LinearEyeDepthSample(uv);
-                if (center <= 0) return 0;
-                float2 px = _CameraColorTexture_TexelSize.xy * _OutlineThickness;
-                float maxDiff = 0;
-                float2 offs[4] = { float2(px.x,0), float2(-px.x,0), float2(0,px.y), float2(0,-px.y) };
-                [unroll] for (int i=0;i<4;i++)
-                {
-                    float d = LinearEyeDepthSample(uv + offs[i]);
-                    if (d > 0)
-                        maxDiff = max(maxDiff, abs(center - d));
-                }
-                float edge = smoothstep(_DepthThreshold, _DepthThreshold + _OutlineSoftness, maxDiff);
-                return edge * _OutlineStrength;
-            #endif
-            }
-
-            float SampleSilhouetteOnly(float2 uv)
-            {
-            #ifndef OUTLINE_ENABLED
-                return 0;
-            #else
-                float centerRaw = SAMPLE_TEXTURE2D_X(_CameraDepthTexture, sampler_CameraDepthTexture, uv).r;
-                if (centerRaw >= _SilhouetteBackgroundThreshold) return 0;
-                float2 px = _CameraColorTexture_TexelSize.xy * _OutlineThickness;
-                float2 offs[4] = { float2(px.x,0), float2(-px.x,0), float2(0,px.y), float2(0,-px.y) };
-                [unroll] for (int i=0;i<4;i++)
-                {
-                    float nr = SAMPLE_TEXTURE2D_X(_CameraDepthTexture, sampler_CameraDepthTexture, uv + offs[i]).r;
-                    if (nr >= _SilhouetteBackgroundThreshold)
-                        return _OutlineStrength;
-                }
-                return 0;
-            #endif
-            }
-
             float2 Hash22(float2 p)
             {
                 // Simple hash for grain UV jitter
@@ -186,40 +117,32 @@ Shader "Cammie/FullScreenCameraEffect"
 
             float4 Frag(Varyings i) : SV_Target
             {
+                // Use UVs as-is, no flipping
+                float2 uv = i.uv;
+
                 float3 col;
 
             #ifdef PIXELATE_ENABLED
                 if (_PixelateEnabled > 0.5 && _PixelSize > 1.0)
                 {
                     float2 pixelCount = _ScreenParams.xy / _PixelSize;
-                    float2 pixelUV = (floor(i.uv * pixelCount) + 0.5) / pixelCount;
+                    float2 pixelUV = (floor(uv * pixelCount) + 0.5) / pixelCount;
                     col = SAMPLE_TEXTURE2D(_CameraColorTexture, sampler_CameraColorTexture, pixelUV).rgb;
                 }
                 else
                 {
-                    col = SAMPLE_TEXTURE2D(_CameraColorTexture, sampler_CameraColorTexture, i.uv).rgb;
+                    col = SAMPLE_TEXTURE2D(_CameraColorTexture, sampler_CameraColorTexture, uv).rgb;
                 }
             #else
-                col = SAMPLE_TEXTURE2D(_CameraColorTexture, sampler_CameraColorTexture, i.uv).rgb;
+                col = SAMPLE_TEXTURE2D(_CameraColorTexture, sampler_CameraColorTexture, uv).rgb;
             #endif
 
                 // Posterize
                 col = Posterize(col, _PosterizeSteps);
-                col = lerp(col, col * _Tint.rgb, _Intensity);
-
-            #ifdef OUTLINE_ENABLED
-                float outlineFactor =
-                #ifdef OUTLINE_SILHOUETTE
-                    SampleSilhouetteOnly(i.uv);
-                #else
-                    SampleOutlineDepth(i.uv);
-                #endif
-                col = lerp(col, _OutlineColor.rgb, saturate(outlineFactor));
-            #endif
 
             #ifdef VIGNETTE_ENABLED
                 {
-                    float2 p = (i.uv - _VignetteCenter.xy);
+                    float2 p = (uv - _VignetteCenter.xy);
                     p *= _VignetteAxisScale.xy;
                     // Elliptical distance
                     float dist = length(p);
@@ -238,7 +161,7 @@ Shader "Cammie/FullScreenCameraEffect"
             #ifdef FILMGRAIN_ENABLED
                 {
                     float time = _Time.y;
-                    float g = FilmGrain(i.uv, time);
+                    float g = FilmGrain(uv, time);
                     float luma = dot(col, float3(0.299,0.587,0.114));
                     float fade = lerp(1.0, saturate(1.0 - luma), _GrainLumaResponse);
                     col += g * (_GrainIntensity * 0.5) * fade; // subtle

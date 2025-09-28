@@ -49,14 +49,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <Controller>k__BackingField: {fileID: 6060882277315488858}
   cameraTarget: {fileID: 2280637525510121760}
+  <GroundLayerMask>k__BackingField:
+    serializedVersion: 2
+    m_Bits: 128
   <StrictSpeedCap>k__BackingField: 100
+  wallFriction: 0.8
   <GroundedSuperState>k__BackingField:
     <IdleState>k__BackingField:
       decceleration: 20
       stopSpeedThreshold: 0.01
     <WalkState>k__BackingField:
       speed: 10
-      decceleration: 5
+      deceleration: 5
     <SprintState>k__BackingField:
       targetSpeed: 30
       acceleration: 5
@@ -71,7 +75,7 @@ MonoBehaviour:
       exitCameraShiftEaseType: 21
     <SlideState>k__BackingField:
       <StartSlideSpeedThreshold>k__BackingField: 2.5
-      enterSpeedMultiplier: 2
+      enterSpeedMultiplier: 1
       friction: 2
       controllerHeight: 1
       enterCameraShiftDuration: 0.25
@@ -80,16 +84,22 @@ MonoBehaviour:
       exitCameraShiftEaseType: 21
     <GroundCheckDistance>k__BackingField: -0.4
     <GroundCheckRadius>k__BackingField: 0.5
-    groundLayerMask:
-      serializedVersion: 2
-      m_Bits: 8
     groundedYVelocity: -5
     jumpHeight: 1.5
-    coyoteTime: 2
+    coyoteTime: 0.75
   <AirborneSuperState>k__BackingField:
     <MoveState>k__BackingField:
       acceleration: 20
     regroundTimeThreshold: 0.1
+  <WallRunState>k__BackingField:
+    minimumSpeed: 10
+    jumpOffHeight: 1.5
+    wallControlAcceleration: 10
+    wallCheckDistance: 1
+    wallCheckYOffset: 0
+    wallLayerMask:
+      serializedVersion: 2
+      m_Bits: 1024
 --- !u!143 &6060882277315488858
 CharacterController:
   m_ObjectHideFlags: 0
