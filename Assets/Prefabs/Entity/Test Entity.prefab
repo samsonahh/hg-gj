@@ -166,8 +166,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   playerTag: Player
-  sightRange: 18
-  attackRange: 10
+  sightRange: 14.9
+  attackRange: 9.95
   requireLineOfSight: 1
   obstacleMask:
     serializedVersion: 2
@@ -181,7 +181,7 @@ MonoBehaviour:
   projectilePrefab: {fileID: 146224877990961031, guid: 5ea8ff61ed22ea442aae204d4e5e24d4, type: 3}
   firePoint: {fileID: 2562692945666714298}
   timeBetweenShots: 0.75
-  magazineSize: 5
+  magazineSize: 6
   muzzleVerticalOffset: 1.2
   projectileDamage: 10
   projectileSpeed: 5
